@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PAVOI Inspire">
+  <meta name="color-scheme" content="dark">
+  <title>PAVOI ✦ Inspire</title>
+
+  <script>
+    const PAVOI_CONFIG = {
+      formAction: "https://docs.google.com/forms/d/e/1FAIpQLScxVaTcA6HuDAmeWIl2jclsoOm5M47t8uzLpHW9BsneGKYArw/formResponse",
+      imgbbKey:   "f6e9a959340441c78b521d6a1f623af7",
+      fields: {
+        url:          "entry.764861048",
+        platform:     "entry.707029538",
+        contentType:  "entry.1754516628",
+        brand:        "entry.1879819265",
+        price:        "entry.1423837269",
+        reviewScore:  "entry.1515599051",
+        reviewCount:  "entry.90512904",
+        likes:        "entry.1045979261",
+        comments:     "entry.1263138574",
+        saves:        "entry.402845346",
+        savedBy:      "entry.1531882183",
+        saveDate:     "entry.1506116282",
+        note:         "entry.345469081",
+        tags:         "entry.1716445891",
+        urgent:       "entry.151443147",
+        imageUrl:     "entry.1033021065"
+      },
+      team: [
+        "Hannah Samlin",
+        "Rita Lopes",
+        "Tal Masica",
+        "Shynade Austen",
+        "Tara Ganon",
+        "Kelly Hallinan"
+      ]
+    };
+  </script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      background: #0A0A0A;
+      color: #F0EEE8;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      min-height: 100%;
+      -webkit-font-smoothing: antialiased;
+      color-scheme: dark;
+    }
+
+    .app { max-width: 480px; margin: 0 auto; padding: 0 0 env(safe-area-inset-bottom, 32px); }
+
+    /* ── Header ── */
+    .header {
+      position: sticky; top: 0;
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1E1E1E;
+      padding: 16px 20px 14px;
+      z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-logo { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: #C9A84C; }
+
+    /* ── Name bar ── */
+    .name-bar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 20px;
+      background: #111;
+      border-bottom: 1px solid #1E1E1E;
+    }
+    .name-bar label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #555; font-weight: 600; white-space: nowrap; }
+    .name-bar select {
+      flex: 1;
+      background: #1C1C1C;
+      background-color: #1C1C1C;
+      border: 1px solid #2A2A2A;
+      border-radius: 6px;
+      padding: 8px 32px 8px 12px;
+      color: #F0EEE8;
+      -webkit-text-fill-color: #F0EEE8;
+      font-size: 13px;
+      font-family: inherit;
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+    .name-bar select option { background: #1C1C1C; color: #F0EEE8; }
+
+    /* ── Status banner ── */
+    .status-banner {
+      display: none; margin: 16px 20px 0; padding: 12px 16px;
+      border-radius: 6px; font-size: 13px; line-height: 1.4; font-weight: 500;
+    }
+    .status-banner.error   { background: #1F0E0E; border: 1px solid #4A1A1A; color: #E05252; }
+    .status-banner.success { background: #0C1F10; border: 1px solid #1A4A20; color: #4CAF70; }
+
+    /* ── Form ── */
+    .form { padding: 24px 20px 32px; display: flex; flex-direction: column; gap: 24px; }
+
+    .field-label {
+      font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: #555; font-weight: 600; margin-bottom: 8px; display: block;
+    }
+
+    /* URL */
+    .url-row { display: flex; gap: 8px; align-items: stretch; }
+    .url-row input {
+      flex: 1;
+      background: #141414; background-color: #141414;
+      border: 1px solid #2A2A2A; border-radius: 6px;
+      padding: 13px 14px;
+      color: #F0EEE8; -webkit-text-fill-color: #F0EEE8;
+      font-size: 13px; font-family: 'Courier New', monospace;
+      -webkit-appearance: none; appearance: none;
+    }
+    .url-row input:focus { outline: none; border-color: #C9A84C; background: #1C1C1C; background-color: #1C1C1C; }
+    .url-row input::placeholder { color: #444; -webkit-text-fill-color: #444; }
+    .paste-btn {
+      background: #1C1C1C; border: 1px solid #2A2A2A; border-radius: 6px;
+      padding: 0 14px; color: #777; font-size: 12px;
+      cursor: pointer; white-space: nowrap; font-family: inherit; flex-shrink: 0;
+    }
+
+    /* Photos */
+    .photo-add-btn {
+      width: 100%;
+      border: 1.5px dashed #2A2A2A; border-radius: 6px;
+      background: #141414; background-color: #141414;
+      padding: 22px 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .photo-add-btn:active { background: #1C1C1C; background-color: #1C1C1C; }
+    .photo-add-btn .icon { font-size: 26px; }
+    .photo-add-btn .label { font-size: 13px; color: #777; }
+    .photo-add-btn .sub   { font-size: 11px; color: #444; }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .photo-thumb {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #1C1C1C;
+    }
+    .photo-thumb img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .photo-thumb-remove {
+      position: absolute; top: 4px; right: 4px;
+      background: rgba(0,0,0,0.75); border: none; border-radius: 50%;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 12px; color: #FFF; line-height: 1;
+    }
+    .photo-add-more {
+      aspect-ratio: 1;
+      border: 1.5px dashed #2A2A2A; border-radius: 6px;
+      background: #141414; background-color: #141414;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; gap: 4px;
+      font-size: 20px; color: #444;
+    }
+
+    /* Note */
+    textarea {
+      width: 100%;
+      background: #141414; background-color: #141414;
+      border: 1px solid #2A2A2A; border-radius: 6px;
+      padding: 13px 14px;
+      color: #F0EEE8; -webkit-text-fill-color: #F0EEE8;
+      font-size: 14px; font-family: inherit;
+      resize: vertical; min-height: 100px; line-height: 1.55;
+      -webkit-appearance: none; appearance: none;
+    }
+    textarea:focus { outline: none; border-color: #C9A84C; background: #1C1C1C; background-color: #1C1C1C; }
+    textarea::placeholder { color: #444; -webkit-text-fill-color: #444; }
+    textarea.error { border-color: #E05252; }
+
+    /* Submit */
+    .submit-btn {
+      width: 100%;
+      background: #C9A84C; color: #0A0A0A;
+      border: none; border-radius: 6px;
+      padding: 17px 16px;
+      font-size: 13px; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      cursor: pointer; font-family: inherit;
+      transition: opacity 0.15s;
+    }
+    .submit-btn:active { opacity: 0.8; }
+    .submit-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* Progress bar */
+    .progress-bar-wrap {
+      display: none; height: 3px; background: #1C1C1C;
+      border-radius: 2px; overflow: hidden; margin-top: -16px;
+    }
+    .progress-bar-fill {
+      height: 100%; background: #C9A84C;
+      border-radius: 2px; transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    /* Success */
+    #successState {
+      display: none;
+      flex-direction: column; align-items: center; justify-content: center;
+      padding: 64px 32px; text-align: center; min-height: 70vh;
+      background: #0A0A0A;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <span class="header-logo">PAVOI ✦ Inspire</span>
+  </div>
+
+  <!-- Name selector — persisted, always visible -->
+  <div class="name-bar">
+    <label for="f-saved-by">Saving as</label>
+    <select id="f-saved-by">
+      <option value="">Select your name</option>
+    </select>
+  </div>
+
+  <div class="status-banner" id="statusBanner"></div>
+
+  <!-- Success state -->
+  <div id="successState">
+    <div style="font-size:38px; margin-bottom:18px; color:#C9A84C;">✦</div>
+    <div style="font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:#C9A84C; font-weight:700; margin-bottom:10px;">Saved</div>
+    <div style="font-size:22px; font-weight:300; color:#F0EEE8; margin-bottom:6px;" id="successCount"></div>
+    <div style="font-size:13px; color:#555; margin-bottom:40px;">Row(s) landed in your Google Sheet.</div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+      <button onclick="resetForm()" style="background:#C9A84C; color:#0A0A0A; border:none; border-radius:6px; padding:13px 28px; font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; font-family:inherit;">Save More ✦</button>
+      <button onclick="window.close()" style="background:none; border:1px solid #2A2A2A; border-radius:6px; padding:13px 28px; font-size:12px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; color:#777; font-family:inherit;">Close</button>
+    </div>
+  </div>
+
+  <form class="form" id="captureForm" onsubmit="handleSubmit(event)">
+
+    <!-- URL (optional) -->
+    <div>
+      <span class="field-label">Source URL <span style="color:#444; font-weight:400; font-size:9px; text-transform:none; letter-spacing:0;">(optional)</span></span>
+      <div class="url-row">
+        <input type="url" id="f-url" placeholder="https://" autocomplete="off" autocorrect="off" spellcheck="false">
+        <button type="button" class="paste-btn" id="pasteBtn" onclick="pasteFromClipboard()">📋 Paste</button>
+      </div>
+    </div>
+
+    <!-- Photos -->
+    <div>
+      <span class="field-label">Photos <span style="color:#444; font-weight:400; font-size:9px; text-transform:none; letter-spacing:0;">(tap to add multiple)</span></span>
+
+      <div class="photo-add-btn" id="photoAddBtn" onclick="document.getElementById('f-image').click()">
+        <span class="icon">📷</span>
+        <span class="label">Tap to add from library</span>
+        <span class="sub">Select multiple at once from camera roll</span>
+      </div>
+
+      <div class="photo-grid" id="photoGrid" style="display:none;"></div>
+
+      <input type="file" id="f-image" accept="image/*" multiple style="display:none" onchange="handleImageSelect(event)">
+    </div>
+
+    <!-- Note -->
+    <div>
+      <span class="field-label">Why are you saving this? <span style="color:#E05252;">*</span></span>
+      <textarea
+        id="f-note"
+        placeholder="What caught your eye? What are you asking the team to look at?"
+        rows="4"
+      ></textarea>
+    </div>
+
+    <div>
+      <button type="submit" class="submit-btn" id="submitBtn">Save to PAVOI Inspire ✦</button>
+      <div class="progress-bar-wrap" id="progressWrap">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  // ── Tracked images ──────────────────────────────────────────────
+  let selectedFiles = [];
+
+  function handleImageSelect(e) {
+    const newFiles = Array.from(e.target.files);
+    selectedFiles = selectedFiles.concat(newFiles);
+    e.target.value = ''; // reset so same file can be re-added
+    renderPhotoGrid();
+  }
+
+  function renderPhotoGrid() {
+    const grid   = document.getElementById('photoGrid');
+    const addBtn = document.getElementById('photoAddBtn');
+    grid.innerHTML = '';
+
+    if (selectedFiles.length === 0) {
+      addBtn.style.display = 'flex';
+      grid.style.display   = 'none';
+      return;
+    }
+
+    addBtn.style.display = 'none';
+    grid.style.display   = 'grid';
+
+    selectedFiles.forEach((file, idx) => {
+      const url   = URL.createObjectURL(file);
+      const thumb = document.createElement('div');
+      thumb.className = 'photo-thumb';
+      thumb.innerHTML = `
+        <img src="${url}" alt="photo ${idx + 1}">
+        <button type="button" class="photo-thumb-remove" onclick="removePhoto(${idx})">✕</button>
+      `;
+      grid.appendChild(thumb);
+    });
+
+    // "Add more" tile
+    const addMore = document.createElement('div');
+    addMore.className = 'photo-add-more';
+    addMore.innerHTML = '<span>＋</span>';
+    addMore.onclick = () => document.getElementById('f-image').click();
+    grid.appendChild(addMore);
+  }
+
+  function removePhoto(idx) {
+    selectedFiles.splice(idx, 1);
+    renderPhotoGrid();
+  }
+
+  // ── ImgBB upload ────────────────────────────────────────────────
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function uploadToImgBB(file) {
+    const base64 = await fileToBase64(file);
+    const body   = new FormData();
+    body.append('image', base64);
+    const res  = await fetch(`https://api.imgbb.com/1/upload?key=${PAVOI_CONFIG.imgbbKey}`, { method: 'POST', body });
+    const json = await res.json();
+    if (json.success) return json.data.url;
+    throw new Error('ImgBB upload failed');
+  }
+
+  // ── Submit one row ──────────────────────────────────────────────
+  async function submitRow(sourceUrl, imageUrl, note, savedBy, today) {
+    const f = PAVOI_CONFIG.fields;
+    const params = new URLSearchParams();
+    params.append(f.url,         sourceUrl);
+    params.append(f.savedBy,     savedBy);
+    params.append(f.saveDate,    today);
+    params.append(f.note,        note);
+    params.append(f.imageUrl,    imageUrl);
+    // Blank out optional fields so they don't cause Google Forms warnings
+    params.append(f.platform,    '');
+    params.append(f.contentType, '');
+    params.append(f.brand,       '');
+    params.append(f.price,       '');
+    params.append(f.tags,        '');
+    params.append(f.urgent,      'No');
+
+    await fetch(PAVOI_CONFIG.formAction, {
+      method:  'POST',
+      mode:    'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body:    params.toString()
+    });
+  }
+
+  // ── Main submit ─────────────────────────────────────────────────
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const note    = document.getElementById('f-note').value.trim();
+    const savedBy = document.getElementById('f-saved-by').value;
+    const url     = document.getElementById('f-url').value.trim();
+
+    if (!savedBy) {
+      showStatus('error', 'Select your name at the top.');
+      return;
+    }
+    if (!note) {
+      showStatus('error', 'Add a quick note — tell the team why you saved this.');
+      document.getElementById('f-note').classList.add('error');
+      document.getElementById('f-note').focus();
+      return;
+    }
+    if (!url && selectedFiles.length === 0) {
+      showStatus('error', 'Add a URL or at least one photo.');
+      return;
+    }
+
+    localStorage.setItem('pavoi-name', savedBy);
+
+    const btn     = document.getElementById('submitBtn');
+    const progWrap = document.getElementById('progressWrap');
+    const progFill = document.getElementById('progressFill');
+    btn.disabled = true;
+    progWrap.style.display = 'block';
+
+    const today = new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+    const total = Math.max(selectedFiles.length, 1);
+
+    try {
+      if (selectedFiles.length === 0) {
+        // URL-only capture
+        btn.textContent = 'Saving…';
+        progFill.style.width = '60%';
+        await submitRow(url, '', note, savedBy, today);
+        progFill.style.width = '100%';
+      } else {
+        // One row per image
+        for (let i = 0; i < selectedFiles.length; i++) {
+          btn.textContent = `Uploading ${i + 1} of ${total}…`;
+          progFill.style.width = `${Math.round(((i * 2) / (total * 2)) * 100)}%`;
+          const imageUrl = await uploadToImgBB(selectedFiles[i]);
+
+          btn.textContent = `Saving ${i + 1} of ${total}…`;
+          progFill.style.width = `${Math.round(((i * 2 + 1) / (total * 2)) * 100)}%`;
+          await submitRow(url, imageUrl, note, savedBy, today);
+        }
+        progFill.style.width = '100%';
+      }
+
+      showSuccessState(savedBy, total);
+
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Save to PAVOI Inspire ✦';
+      progWrap.style.display = 'none';
+      progFill.style.width = '0%';
+      showStatus('error', 'Something went wrong. Check your connection and try again.');
+      console.error(err);
+    }
+  }
+
+  // ── UI helpers ──────────────────────────────────────────────────
+  function showSuccessState(savedBy, count) {
+    document.getElementById('captureForm').style.display = 'none';
+    document.getElementById('statusBanner').style.display = 'none';
+    document.getElementById('successState').style.display = 'flex';
+    document.getElementById('successCount').textContent =
+      count === 1 ? '1 item saved.' : `${count} items saved.`;
+  }
+
+  function resetForm() {
+    document.getElementById('captureForm').reset();
+    document.getElementById('captureForm').style.display = 'flex';
+    document.getElementById('successState').style.display = 'none';
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').textContent = 'Save to PAVOI Inspire ✦';
+    document.getElementById('progressWrap').style.display = 'none';
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('f-note').classList.remove('error');
+    selectedFiles = [];
+    renderPhotoGrid();
+    prefillFromParams();
+    const saved = localStorage.getItem('pavoi-name');
+    if (saved) document.getElementById('f-saved-by').value = saved;
+    window.scrollTo(0, 0);
+  }
+
+  function showStatus(type, msg) {
+    const el = document.getElementById('statusBanner');
+    el.className = `status-banner ${type}`;
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  async function pasteFromClipboard() {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text && text.trim().startsWith('http')) {
+        document.getElementById('f-url').value = text.trim();
+        document.getElementById('pasteBtn').textContent = '✓ Pasted';
+        setTimeout(() => document.getElementById('pasteBtn').textContent = '📋 Paste', 1500);
+      } else {
+        document.getElementById('pasteBtn').textContent = 'No URL';
+        setTimeout(() => document.getElementById('pasteBtn').textContent = '📋 Paste', 1500);
+      }
+    } catch (e) {
+      document.getElementById('f-url').focus();
+    }
+  }
+
+  function prefillFromParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('url'))   document.getElementById('f-url').value = params.get('url');
+  }
+
+  function renderTeamDropdown() {
+    const sel = document.getElementById('f-saved-by');
+    PAVOI_CONFIG.team.forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name; opt.textContent = name;
+      sel.appendChild(opt);
+    });
+    const saved = localStorage.getItem('pavoi-name');
+    if (saved) sel.value = saved;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderTeamDropdown();
+    prefillFromParams();
+    document.getElementById('f-note').addEventListener('input', () => {
+      document.getElementById('f-note').classList.remove('error');
+    });
+  });
+</script>
+
+</body>
+</html>
