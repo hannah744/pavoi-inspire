@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAVOI Form Test</title>
+<style>
+  body { font-family: monospace; padding: 32px; background: #f5f5f5; }
+  h2 { margin-bottom: 8px; }
+  p { margin-bottom: 24px; color: #555; font-size: 13px; }
+  button { padding: 12px 24px; background: #2e4042; color: white; border: none; cursor: pointer; font-family: monospace; font-size: 14px; margin-right: 12px; margin-bottom: 12px; }
+  button:hover { background: #1a2829; }
+  #log { margin-top: 24px; background: white; border: 1px solid #ccc; padding: 16px; font-size: 13px; line-height: 1.8; white-space: pre-wrap; min-height: 60px; }
+  .ok { color: green; } .err { color: red; } .info { color: #666; }
+</style>
+</head>
+<body>
+<h2>PAVOI — Form Submission Diagnostic</h2>
+<p>Click each test in order. After each one, check your Google Sheet for a new row.<br>
+This isolates whether the issue is the form config, entry IDs, or the app code.</p>
+
+<button onclick="testDirect()">Test 1 — Direct form POST</button>
+<button onclick="testFetch()">Test 2 — fetch no-cors</button>
+<button onclick="testIframe()">Test 3 — Hidden iframe (app method)</button>
+
+<div id="log">Ready — click a test above.</div>
+
+<iframe name="gtest_iframe" id="gtest_iframe" style="display:none"></iframe>
+
+<script>
+const FORM_ID    = '1FAIpQLScqkWYOe1Kt7jkcGHi2kyj2wTvhJuLzZkcPzM6AZvbereBadg';
+const FORM_URL   = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse`;
+const TEST_DATA  = {
+  'entry.436271806':  'https://test-url.com',
+  'entry.1359018212': 'Hannah Samlin',
+  'entry.1185952228': new Date().toISOString(),
+  'entry.1510212450': 'DIAGNOSTIC TEST — delete this row',
+  'entry.1747230784': '',
+  'entry.1492234884': '',
+  'entry.46194548':   '',
+  'entry.381198150':  '',
+  'entry.2030185014': '',
+  'entry.89148739':   '',
+  'entry.1507063394': ''
+};
+
+function log(msg, cls='info') {
+  const el = document.getElementById('log');
+  const line = document.createElement('div');
+  line.className = cls;
+  line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
+
+function testDirect() {
+  log('Test 1: Building direct form POST to hidden iframe...');
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = FORM_URL;
+  form.target = 'gtest_iframe';
+  Object.entries(TEST_DATA).forEach(([name, val]) => {
+    const inp = document.createElement('input');
+    inp.type = 'hidden'; inp.name = name; inp.value = val;
+    form.appendChild(inp);
+  });
+  document.body.appendChild(form);
+  const iframe = document.getElementById('gtest_iframe');
+  iframe.onload = () => {
+    log('Test 1: iframe onload fired — submission likely went through', 'ok');
+    log('→ Check your Google Sheet now for a row with "DIAGNOSTIC TEST"', 'ok');
+    document.body.removeChild(form);
+  };
+  form.submit();
+  log('Test 1: form.submit() called — waiting for iframe onload...');
+  setTimeout(() => log('Test 1: 3s passed (cross-origin iframe may not fire onload — check sheet anyway)', 'info'), 3000);
+}
+
+async function testFetch() {
+  log('Test 2: Sending fetch with no-cors...');
+  try {
+    const p = new URLSearchParams(TEST_DATA);
+    p.set('entry.1510212450', 'DIAGNOSTIC TEST fetch — delete this row');
+    await fetch(FORM_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: p.toString()
+    });
+    log('Test 2: fetch resolved (no-cors always resolves — check sheet to verify)', 'ok');
+    log('→ Check your Google Sheet for a row with "DIAGNOSTIC TEST fetch"', 'ok');
+  } catch(e) {
+    log(`Test 2: fetch threw error — ${e.message}`, 'err');
+  }
+}
+
+async function testIframe() {
+  log('Test 3: Testing iframe method (same as app uses)...');
+  return new Promise((resolve) => {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = FORM_URL;
+    form.target = 'gtest_iframe';
+    const data = { ...TEST_DATA, 'entry.1510212450': 'DIAGNOSTIC TEST iframe — delete this row' };
+    Object.entries(data).forEach(([name, val]) => {
+      const inp = document.createElement('input');
+      inp.type = 'hidden'; inp.name = name; inp.value = val;
+      form.appendChild(inp);
+    });
+    document.body.appendChild(form);
+    const iframe = document.getElementById('gtest_iframe');
+    iframe.onload = () => {
+      log('Test 3: iframe onload fired', 'ok');
+      log('→ Check your Google Sheet for a row with "DIAGNOSTIC TEST iframe"', 'ok');
+      document.body.removeChild(form);
+      resolve();
+    };
+    form.submit();
+    log('Test 3: form.submit() called — waiting 3s then checking...');
+    setTimeout(() => {
+      log('Test 3: 3s passed — check sheet regardless of onload', 'info');
+      try { document.body.removeChild(form); } catch(e) {}
+      resolve();
+    }, 3000);
+  });
+}
+</script>
+</body>
+</html>
