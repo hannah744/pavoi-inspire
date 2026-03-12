@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PAVOI Digest">
+<meta name="theme-color" content="#2e4042">
+<title>PAVOI Inspire · Digest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:#e6e7e5;color:#282828;
+  height:100dvh;display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── HEADER ─────────────────────────────────── */
+.hdr{
+  flex-shrink:0;background:#2e4042;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;height:58px;
+  box-shadow:0 1px 0 rgba(169,189,182,.2);
+}
+.hdr-left{display:flex;flex-direction:column;gap:1px}
+.hdr-brand{
+  color:#FFFFFF;
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;
+}
+.hdr-label{
+  color:#a9bdb6;
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:1.8px;text-transform:uppercase;
+}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.name-sel{
+  background:#3a5053;color:#FFFFFF;
+  border:1.5px solid #a9bdb6;border-radius:2px;
+  padding:6px 12px;
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:.5px;
+  outline:none;cursor:pointer;-webkit-appearance:none;max-width:148px;
+}
+.btn-refresh{
+  background:transparent;
+  border:1.5px solid #4a6669;color:#a9bdb6;
+  border-radius:2px;width:32px;height:32px;font-size:16px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.btn-refresh:active{opacity:.6}
+.btn-refresh.spinning{animation:spin 1s linear infinite}
+
+/* ── WEEK NAV ────────────────────────────────── */
+.week-bar{
+  flex-shrink:0;background:#282828;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;height:46px;
+}
+.week-btn{
+  background:transparent;border:none;color:#6b7b79;
+  font-size:22px;cursor:pointer;width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:2px;font-family:inherit;
+}
+.week-btn:active{background:#3a3a3a;color:#FFFFFF}
+.week-center{text-align:center;flex:1}
+.week-label{
+  color:#FFFFFF;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:600;letter-spacing:.3px;
+}
+.week-sub{
+  color:#6b7b79;
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+}
+
+/* ── TABS ────────────────────────────────────── */
+.tabs{
+  flex-shrink:0;background:#FFFFFF;
+  display:flex;border-bottom:2px solid #e6e7e5;
+}
+.tab{
+  flex:1;height:46px;border:none;background:transparent;
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;
+  color:#a9bdb6;cursor:pointer;position:relative;transition:color .2s;
+}
+.tab.active{color:#2e4042}
+.tab.active::after{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;
+  height:2px;background:#2e4042;
+}
+.tab-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:#c0392b;color:#FFFFFF;
+  border-radius:2px;padding:1px 6px;
+  font-size:9px;font-weight:700;letter-spacing:.5px;
+  margin-left:5px;min-width:16px;
+}
+.tab-badge.sage{background:#a9bdb6}
+
+/* ── VIEWS ───────────────────────────────────── */
+.view{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;display:none}
+.view.active{display:flex;flex-direction:column}
+
+/* ── VOTE VIEW ───────────────────────────────── */
+.vote-counter{
+  flex-shrink:0;text-align:center;padding:12px 0 0;
+  color:#a9bdb6;
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+}
+.card-arena{
+  flex:1;position:relative;
+  display:flex;align-items:center;justify-content:center;
+  padding:16px 16px 8px;overflow:hidden;
+}
+.card-stack{position:relative;width:100%;max-width:400px;height:100%}
+
+/* Swipe cards */
+.swipe-card{
+  position:absolute;inset:0;
+  border-radius:2px;overflow:hidden;
+  background:#FFFFFF;
+  box-shadow:0 8px 32px rgba(46,64,66,.15);
+  cursor:grab;user-select:none;-webkit-user-select:none;
+  will-change:transform;touch-action:none;
+}
+.swipe-card:active{cursor:grabbing}
+.swipe-card.behind-1{transform:scale(.96) translateY(-10px);z-index:1;pointer-events:none}
+.swipe-card.behind-2{transform:scale(.92) translateY(-20px);z-index:0;pointer-events:none}
+.swipe-card.top{z-index:10}
+
+.sc-img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#dde0de;display:block;flex-shrink:0}
+.sc-img-ph{
+  width:100%;aspect-ratio:4/3;
+  background:#dde0de;
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;opacity:.4;flex-shrink:0;
+}
+.sc-body{padding:18px;overflow-y:auto;flex:1}
+.sc-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.sc-who{
+  color:#2e4042;
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+}
+.sc-date{
+  color:#a9bdb6;
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:.5px;
+}
+.sc-note{
+  font-family:'DM Sans',sans-serif;
+  font-size:16px;line-height:1.55;color:#282828;font-weight:400;
+  margin-bottom:12px;
+}
+.sc-link{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:1px;text-transform:uppercase;
+  color:#2e4042;text-decoration:none;font-weight:700;
+  display:inline-flex;align-items:center;gap:4px;
+}
+.sc-link:hover{text-decoration:underline}
+
+/* YES / NO overlays */
+.ov-yes,.ov-no{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:80px;opacity:0;pointer-events:none;
+  transition:opacity .05s;
+}
+.ov-yes{background:rgba(46,64,66,.2)}
+.ov-no{background:rgba(192,57,43,.2)}
+
+/* Vote buttons */
+.vote-btns{
+  flex-shrink:0;display:flex;justify-content:center;align-items:center;
+  gap:28px;padding:10px 0 16px;
+  padding-bottom:max(16px,env(safe-area-inset-bottom));
+}
+.vbtn{
+  width:70px;height:70px;border-radius:2px;border:none;
+  font-size:28px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(46,64,66,.14);
+  transition:transform .15s,opacity .15s;flex-shrink:0;
+}
+.vbtn:active{transform:scale(.9)}
+.vbtn-no{background:#FFFFFF;border:2.5px solid #c0392b}
+.vbtn-skip{background:#FFFFFF;border:2.5px solid #cdd0ce;width:50px;height:50px;font-size:18px}
+.vbtn-yes{background:#FFFFFF;border:2.5px solid #2e4042}
+
+/* All done state */
+.all-done{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px;text-align:center;gap:14px;
+}
+.all-done-eyebrow{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#a9bdb6;
+}
+.all-done-ttl{
+  font-family:'DM Sans',sans-serif;
+  font-size:22px;font-weight:600;color:#2e4042;line-height:1.3;
+}
+.all-done-sub{
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;color:#6b7b79;line-height:1.6;
+}
+.btn-results{
+  background:#2e4042;color:#FFFFFF;
+  border:none;border-radius:2px;
+  padding:14px 28px;
+  font-family:'Space Mono',monospace;
+  font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  cursor:pointer;margin-top:8px;
+  transition:opacity .15s;
+}
+.btn-results:active{opacity:.75}
+
+/* Center message (loading / empty) */
+.center-msg{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:32px;text-align:center;gap:12px;
+}
+.center-icon{font-size:40px;opacity:.5}
+.center-eyebrow{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#a9bdb6;
+}
+.center-ttl{
+  font-family:'DM Sans',sans-serif;
+  font-size:18px;font-weight:600;color:#2e4042;
+}
+.center-sub{
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;color:#6b7b79;line-height:1.6;max-width:300px;
+}
+
+/* ── RESULTS VIEW ────────────────────────────── */
+.results-filter{
+  flex-shrink:0;display:flex;gap:8px;
+  padding:12px 16px;overflow-x:auto;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.results-filter::-webkit-scrollbar{display:none}
+.filter-btn{
+  flex-shrink:0;height:32px;border-radius:2px;
+  border:1.5px solid #cdd0ce;background:#FFFFFF;color:#6b7b79;
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  padding:0 12px;cursor:pointer;transition:all .15s;
+}
+.filter-btn.on{background:#2e4042;color:#FFFFFF;border-color:#2e4042}
+.filter-btn.go.on{background:#2e4042;border-color:#2e4042}
+.filter-btn.discuss.on{background:#7a6535;border-color:#7a6535;color:#FFFFFF}
+.filter-btn.archive.on{background:#6b7b79;border-color:#6b7b79;color:#FFFFFF}
+
+.results-grid{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:0 16px 16px;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
+}
+.result-card{
+  background:#FFFFFF;border-radius:2px;overflow:hidden;
+  box-shadow:0 2px 12px rgba(46,64,66,.08);
+  cursor:pointer;transition:transform .15s,box-shadow .15s;
+}
+.result-card:active{transform:scale(.97)}
+.rc-img{width:100%;aspect-ratio:1;object-fit:cover;background:#dde0de;display:block}
+.rc-img-ph{
+  width:100%;aspect-ratio:1;background:#dde0de;
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;opacity:.4;
+}
+.rc-body{padding:10px}
+.rc-badge{
+  display:inline-flex;align-items:center;
+  height:18px;border-radius:2px;padding:0 7px;
+  font-family:'Space Mono',monospace;
+  font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.badge-go{background:#e8f2ee;color:#2e4042}
+.badge-discuss{background:#fdf4e1;color:#7a6535}
+.badge-archive{background:#edeeed;color:#6b7b79}
+.badge-pending{background:#e6e7e5;color:#a9bdb6}
+.rc-note{
+  font-family:'DM Sans',sans-serif;
+  font-size:12px;color:#282828;line-height:1.45;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  margin-bottom:5px;
+}
+.rc-who{
+  font-family:'Space Mono',monospace;
+  font-size:10px;color:#a9bdb6;letter-spacing:.3px;
+}
+.rc-votes{display:flex;align-items:center;gap:3px;margin-top:7px}
+.vote-dot{width:7px;height:7px;border-radius:1px}
+.vote-dot.yes{background:#2e4042}
+.vote-dot.no{background:#c0392b}
+.vote-dot.empty{background:#cdd0ce}
+.rc-pct{
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;color:#a9bdb6;margin-left:3px;
+}
+
+/* ── DETAIL MODAL ────────────────────────────── */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(46,64,66,.6);
+  z-index:500;display:none;align-items:flex-end;justify-content:center;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.modal-bg.on{display:flex}
+.modal{
+  background:#FFFFFF;border-radius:2px;
+  width:100%;max-width:480px;max-height:90dvh;overflow-y:auto;
+  padding:24px;padding-bottom:max(24px,env(safe-area-inset-bottom));
+  position:relative;
+}
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  background:#e6e7e5;border:none;width:30px;height:30px;
+  border-radius:2px;font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Mono',monospace;color:#6b7b79;
+}
+.modal-img{width:100%;border-radius:2px;margin-bottom:16px}
+.modal-badge{margin-bottom:12px;display:inline-flex}
+.modal-note{
+  font-family:'DM Sans',sans-serif;
+  font-size:16px;line-height:1.6;font-weight:400;
+  color:#282828;margin-bottom:12px;
+}
+.modal-meta{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:.5px;color:#a9bdb6;
+  margin-bottom:18px;
+}
+.modal-meta a{color:#2e4042;text-decoration:none}
+.modal-votes-ttl{
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;
+  color:#6b7b79;margin-bottom:10px;
+}
+.vote-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 0;border-bottom:1px solid #e6e7e5;
+}
+.vote-row:last-child{border-bottom:none}
+.vote-name{
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:500;color:#282828;
+}
+.vote-val{
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;letter-spacing:1px;
+  padding:3px 9px;border-radius:2px;text-transform:uppercase;
+}
+.vote-val.yes{background:#e8f2ee;color:#2e4042}
+.vote-val.no{background:#fce8e5;color:#c0392b}
+.vote-val.empty{background:#e6e7e5;color:#a9bdb6}
+.modal-bar{margin-top:16px;height:3px;background:#e6e7e5;border-radius:0}
+.modal-bar-fill{height:100%;background:#2e4042;border-radius:0;transition:width .5s}
+
+/* ── EXPORT BAR ──────────────────────────────── */
+.export-bar{
+  flex-shrink:0;background:#FFFFFF;
+  border-top:1px solid #e6e7e5;
+  padding:10px 16px;padding-bottom:max(10px,env(safe-area-inset-bottom));
+  display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
+}
+.export-bar::-webkit-scrollbar{display:none}
+.exp-btn{
+  flex-shrink:0;height:38px;border-radius:2px;
+  border:1.5px solid #cdd0ce;background:#FFFFFF;color:#2e4042;
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  padding:0 12px;cursor:pointer;
+  display:flex;align-items:center;gap:6px;white-space:nowrap;
+  transition:all .15s;
+}
+.exp-btn:active{background:#e6e7e5}
+
+/* ── FLASH + TOAST ───────────────────────────── */
+.copy-flash{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  background:#2e4042;color:#FFFFFF;
+  padding:10px 20px;border-radius:2px;
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  opacity:0;transition:opacity .25s;
+  z-index:600;pointer-events:none;white-space:nowrap;
+}
+.copy-flash.on{opacity:1}
+.toast{
+  position:fixed;top:68px;left:50%;
+  transform:translateX(-50%) translateY(-10px);
+  background:#282828;color:#FFFFFF;
+  padding:10px 20px;border-radius:2px;
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:1.2px;text-transform:uppercase;
+  opacity:0;transition:opacity .25s,transform .25s;
+  z-index:800;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center;
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(min-width:600px){
+  .results-grid{grid-template-columns:repeat(3,1fr)}
+  .card-arena{max-width:440px;margin:0 auto;width:100%}
+}
+/* Lightbox */
+#lightbox{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.92);
+  align-items:center;justify-content:center;
+  cursor:zoom-out;overflow:auto;
+}
+#lightbox.on{display:flex}
+#lightboxImg{
+  max-width:94vw;max-height:94vh;
+  object-fit:contain;border-radius:2px;
+  cursor:default;
+}
+#lightboxClose{
+  position:fixed;top:16px;right:16px;
+  background:rgba(255,255,255,.15);border:none;
+  color:#fff;font-size:20px;width:40px;height:40px;
+  border-radius:50%;cursor:pointer;z-index:10000;
+  display:flex;align-items:center;justify-content:center;
+}
+.sc-img,.rc-img,.modal-img{cursor:zoom-in}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-brand">PAVOI</div>
+    <div class="hdr-label">Inspire · Digest</div>
+  </div>
+  <div class="hdr-right">
+    <button class="btn-refresh" id="btnRefresh" onclick="loadData()" title="Refresh">↻</button>
+    <select class="name-sel" id="nameSelect" onchange="onNameChange()">
+      <option value="">Your name…</option>
+    </select>
+  </div>
+</header>
+
+<div class="week-bar">
+  <button class="week-btn" onclick="changeWeek(-1)">‹</button>
+  <div class="week-center">
+    <div class="week-label" id="weekLabel">Loading…</div>
+    <div class="week-sub" id="weekSub"></div>
+  </div>
+  <button class="week-btn" onclick="changeWeek(+1)" id="btnWeekFwd">›</button>
+</div>
+
+<div class="tabs">
+  <button class="tab active" id="tabVote" onclick="switchTab('vote')">
+    Vote<span class="tab-badge" id="voteBadge">0</span>
+  </button>
+  <button class="tab" id="tabResults" onclick="switchTab('results')">
+    Results<span class="tab-badge sage" id="resultsBadge">0</span>
+  </button>
+</div>
+
+<!-- Vote view -->
+<div class="view active" id="viewVote" style="overflow:hidden">
+  <div id="voteInner" style="flex:1;display:flex;flex-direction:column;overflow:hidden"></div>
+</div>
+
+<!-- Results view -->
+<div class="view" id="viewResults">
+  <div class="results-filter" id="filterRow">
+    <button class="filter-btn on"      data-filter="all"     onclick="setFilter('all')">All</button>
+    <button class="filter-btn go"      data-filter="go"      onclick="setFilter('go')">Go</button>
+    <button class="filter-btn discuss" data-filter="discuss"  onclick="setFilter('discuss')">Discuss</button>
+    <button class="filter-btn archive" data-filter="archive"  onclick="setFilter('archive')">Archive</button>
+    <button class="filter-btn"         data-filter="pending"  onclick="setFilter('pending')">Pending</button>
+  </div>
+  <div class="results-grid" id="resultsGrid"></div>
+  <div class="export-bar">
+    <button class="exp-btn" onclick="exportSlack()">💬 &nbsp;Slack Digest</button>
+    <button class="exp-btn" onclick="exportFigma()">📐 &nbsp;Figma JSON</button>
+    <button class="exp-btn" onclick="exportClaudePrompt()">✦ &nbsp;Claude Prompt</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="document.getElementById('modalBg').classList.remove('on')">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightboxClose" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="Full size">
+</div>
+
+<div class="copy-flash" id="copyFlash"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  CONFIGURATION                                                   ║
+// ╚══════════════════════════════════════════════════════════════════╝
+const CONFIG = {
+  SHEET_INSPIRATION_CSV: 'https://script.google.com/a/macros/pavoi.com/s/AKfycbw0kLoVSNM7linGKndNNns1iD-Wln3ftNeA7v5Cm77Hu1Hd5q7pBQ1pQ-gosgUwRaIz2A/exec',
+  SHEET_VOTES_CSV:       'https://script.google.com/a/macros/pavoi.com/s/AKfycbx5HWMmpDrsGls2RDptPYbDdlF4ag4yN0tLyP7A5uYSxTIyr_Y2TB5YTgrhRmQUeH-j/exec',
+
+  VOTE_FORM_ID:      '1FAIpQLSeUwSOx_Z9ytPS34PQjGUqyEv1ZZ6haa3B5zWiT4u1O1gfZ-Q',
+  VOTE_FIELD_VOTER:  'entry.353833594',
+  VOTE_FIELD_ITEM:   'entry.136359879',
+  VOTE_FIELD_VOTE:   'entry.1872351502',
+  VOTE_FIELD_WEEK:   'entry.395589729',
+
+  THRESHOLD_GO:      70,
+  THRESHOLD_DISCUSS: 40,
+
+  TEAM: [
+    'Hannah Samlin',
+    'Rita Lopes',
+    'Tal Masica',
+    'Shynade Austin',
+    'Tara Ganon',
+    'Kelly Hallinan'
+  ],
+
+  COL_I: { TS:0, URL:1, SAVED_BY:2, SAVE_DATE:3, NOTE:4, IMAGE_URL:5 },
+  COL_V: { TS:0, VOTER:1, ITEM_ID:2, VOTE:3, WEEK:4 }
+};
+// ════════════════════════════════════════════════════════════════════
+
+let allItems    = [];
+let allVotes    = [];
+let weekOffset  = 0;
+let loadError   = null;
+let localVotes  = {};
+let activeFilter = 'all';
+let cardQueue   = [];
+let swipeState  = { active:false, startX:0, startY:0, curX:0, curY:0 };
+let _toastTimer, _copyFlashTimer;
+const SWIPE_THRESHOLD = 80;
+
+// ── Week helpers ──────────────────────────────────────────────────
+function getISOWeek(date) {
+  const d = new Date(date);
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+  const w1 = new Date(d.getFullYear(), 0, 4);
+  const wn = 1 + Math.round(((d - w1) / 86400000 - 3 + (w1.getDay() + 6) % 7) / 7);
+  return `${d.getFullYear()}-W${String(wn).padStart(2,'0')}`;
+}
+function getWeekBounds(offset) {
+  const now = new Date();
+  const dow = (now.getDay() + 6) % 7;
+  const mon = new Date(now);
+  mon.setDate(now.getDate() - dow + offset * 7);
+  mon.setHours(0,0,0,0);
+  const sun = new Date(mon);
+  sun.setDate(mon.getDate() + 6);
+  sun.setHours(23,59,59,999);
+  return { mon, sun, week: getISOWeek(mon) };
+}
+function fmtDate(d)  { return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function fmtShort(d) { return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+function parseDate(s) {
+  if (!s) return new Date(0);
+  // Try as-is first (handles ISO strings fine in all browsers)
+  let d = new Date(s);
+  if (!isNaN(d)) return d;
+  // Handle "M/D/YYYY HH:MM:SS" and "M/D/YYYY, HH:MM:SS AM/PM" (Google Sheets locale formats)
+  const m = s.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})[,\s]+(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM)?/i);
+  if (m) {
+    let h = parseInt(m[4]);
+    if (m[7] && m[7].toUpperCase() === 'PM' && h < 12) h += 12;
+    if (m[7] && m[7].toUpperCase() === 'AM' && h === 12) h = 0;
+    return new Date(parseInt(m[3]), parseInt(m[1])-1, parseInt(m[2]), h, parseInt(m[5]), parseInt(m[6]));
+  }
+  return new Date(0);
+}
+
+// ── CSV parser ────────────────────────────────────────────────────
+
+function gc(row, idx) { return (row && row[idx]) ? String(row[idx]).trim() : ''; }
+
+// ── Init ──────────────────────────────────────────────────────────
+function init() {
+  const sel = document.getElementById('nameSelect');
+  CONFIG.TEAM.forEach(n => {
+    const o = document.createElement('option');
+    o.value = o.textContent = n;
+    sel.appendChild(o);
+  });
+  const saved = localStorage.getItem('pavoi_name');
+  if (saved && CONFIG.TEAM.includes(saved)) sel.value = saved;
+  try { localVotes = JSON.parse(localStorage.getItem('pavoi_votes') || '{}'); } catch { localVotes = {}; }
+  updateWeekDisplay();
+  loadData();
+}
+
+function onNameChange() {
+  const v = document.getElementById('nameSelect').value;
+  if (v) localStorage.setItem('pavoi_name', v);
+  buildVoteQueue();
+  renderVoteView();
+  renderResultsGrid();
+}
+
+// ── Data ──────────────────────────────────────────────────────────
+async function loadData() {
+  const btn = document.getElementById('btnRefresh');
+  btn.classList.add('spinning');
+  loadError = null;
+  const [iRes, vRes] = await Promise.allSettled([
+    fetchCSV(CONFIG.SHEET_INSPIRATION_CSV),
+    fetchCSV(CONFIG.SHEET_VOTES_CSV)
+  ]);
+  if (iRes.status === 'fulfilled') {
+    const rows = parseCSV(iRes.value);
+    allItems = rows.slice(1).filter(r => r.length > 3).map((r,i) => ({
+      id:        gc(r, CONFIG.COL_I.TS) || `item-${i}`,
+      sourceUrl: gc(r, CONFIG.COL_I.URL),
+      savedBy:   gc(r, CONFIG.COL_I.SAVED_BY),
+      saveDate:  gc(r, CONFIG.COL_I.SAVE_DATE),
+      note:      gc(r, CONFIG.COL_I.NOTE),
+      imageUrl:  gc(r, CONFIG.COL_I.IMAGE_URL)
+    })).filter(it => it.note);
+  } else {
+    loadError = iRes.reason?.message || 'Could not load captures sheet';
+    console.error('Captures CSV failed:', iRes.reason);
+  }
+  if (vRes.status === 'fulfilled') {
+    const rows = parseCSV(vRes.value);
+    allVotes = rows.slice(1).filter(r => r.length > 3).map(r => ({
+      voter:  gc(r, CONFIG.COL_V.VOTER),
+      itemId: gc(r, CONFIG.COL_V.ITEM_ID),
+      vote:   gc(r, CONFIG.COL_V.VOTE).toUpperCase(),
+      week:   gc(r, CONFIG.COL_V.WEEK)
+    }));
+  }
+  btn.classList.remove('spinning');
+  buildVoteQueue();
+  renderVoteView();
+  renderResultsGrid();
+  updateBadges();
+}
+
+async function fetchCSV(url) {
+  if (url.includes('YOUR_')) throw new Error('Sheet URL not configured');
+  const r = await fetch(url, { cache: 'no-store', credentials: 'include' });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const data = await r.json();
+  // Apps Script returns a 2D array — convert to the same format parseCSV would return
+  // so the rest of the code works unchanged
+  if (!Array.isArray(data)) throw new Error('Unexpected response format');
+  return '__JSON__' + JSON.stringify(data);
+}
+
+function parseCSV(text) {
+  // Handle JSON response from Apps Script
+  if (text.startsWith('__JSON__')) {
+    return JSON.parse(text.slice(8));
+  }
+  // Original CSV parser (kept as fallback)
+  const rows = [];
+  let inQ = false, cur = '', row = [];
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"') {
+      if (inQ && text[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ;
+    } else if (ch === ',' && !inQ) {
+      row.push(cur.trim()); cur = '';
+    } else if ((ch === '\n' || ch === '\r') && !inQ) {
+      if (ch === '\r' && text[i+1] === '\n') i++;
+      if (cur || row.length) { row.push(cur.trim()); rows.push(row); }
+      row = []; cur = '';
+    } else { cur += ch; }
+  }
+  if (cur || row.length) { row.push(cur.trim()); rows.push(row); }
+  return rows;
+}
+
+// ── Week ──────────────────────────────────────────────────────────
+function updateWeekDisplay() {
+  const { mon, sun, week } = getWeekBounds(weekOffset);
+  document.getElementById('weekLabel').textContent = `${fmtShort(mon)} – ${fmtShort(sun)}`;
+  document.getElementById('weekSub').textContent   = week;
+  const fwd = document.getElementById('btnWeekFwd');
+  fwd.disabled     = weekOffset >= 0;
+  fwd.style.opacity = weekOffset >= 0 ? '.3' : '1';
+}
+function changeWeek(delta) {
+  if (weekOffset + delta > 0) return;
+  weekOffset += delta;
+  updateWeekDisplay();
+  buildVoteQueue();
+  renderVoteView();
+  renderResultsGrid();
+  updateBadges();
+}
+function getWeekItems() {
+  const { mon, sun } = getWeekBounds(weekOffset);
+  return allItems.filter(it => {
+    // Try all available date fields — id is the Google auto-timestamp (most reliable)
+    const candidates = [it.id, it.saveDate].filter(Boolean);
+    const d = candidates.reduce((best, s) => {
+      const parsed = parseDate(s);
+      return (!isNaN(parsed) && parsed > new Date(0)) ? parsed : best;
+    }, new Date(0));
+    return d >= mon && d <= sun;
+  });
+}
+
+// ── Votes ─────────────────────────────────────────────────────────
+function getVoteMap() {
+  const { week } = getWeekBounds(weekOffset);
+  const map = {};
+  allVotes.filter(v => v.week === week).forEach(v => {
+    if (!map[v.itemId]) map[v.itemId] = {};
+    map[v.itemId][v.voter] = v.vote;
+  });
+  const user = document.getElementById('nameSelect').value;
+  const lv   = localVotes[week] || {};
+  if (user) {
+    Object.entries(lv).forEach(([itemId, vote]) => {
+      if (!map[itemId]) map[itemId] = {};
+      if (vote !== 'SKIP') map[itemId][user] = vote;
+    });
+  }
+  return map;
+}
+function getItemStatus(item) {
+  const vm   = getVoteMap();
+  const votes = vm[item.id] || {};
+  const vals  = Object.values(votes).filter(v => v === 'YES' || v === 'NO');
+  if (!vals.length) return { status:'pending', yes:0, no:0, total:0, pct:0 };
+  const yes = vals.filter(v => v === 'YES').length;
+  const pct = Math.round(yes / vals.length * 100);
+  const status = pct >= CONFIG.THRESHOLD_GO      ? 'go'
+               : pct >= CONFIG.THRESHOLD_DISCUSS ? 'discuss'
+               : 'archive';
+  return { status, yes, no: vals.length - yes, total: vals.length, pct };
+}
+function hasUserVoted(itemId) {
+  const { week } = getWeekBounds(weekOffset);
+  const user = document.getElementById('nameSelect').value;
+  if (!user) return false;
+  const lv = localVotes[week] || {};
+  if (lv[itemId]) return true;
+  const vm = getVoteMap();
+  return !!(vm[itemId] && vm[itemId][user]);
+}
+
+// ── Queue ─────────────────────────────────────────────────────────
+function buildVoteQueue() {
+  cardQueue = getWeekItems().filter(it => !hasUserVoted(it.id));
+}
+
+// ── Vote View ─────────────────────────────────────────────────────
+function renderVoteView() {
+  const container = document.getElementById('voteInner');
+  const items     = getWeekItems();
+
+  if (CONFIG.SHEET_INSPIRATION_CSV.includes('YOUR_') || !CONFIG.SHEET_INSPIRATION_CSV.includes('script.google.com')) {
+    container.innerHTML = `<div class="center-msg">
+      <div class="center-icon">⚙️</div>
+      <div class="center-eyebrow">Setup Required</div>
+      <div class="center-ttl">Configure sheet URLs</div>
+      <div class="center-sub">Update SHEET_INSPIRATION_CSV and related config values in the HTML, then reload.</div>
+    </div>`;
+    return;
+  }
+  if (!items.length) {
+    const totalLoaded = allItems.length;
+    if (loadError) {
+      container.innerHTML = `<div class="center-msg">
+        <div class="center-icon">⚠️</div>
+        <div class="center-eyebrow">Sheet load failed</div>
+        <div class="center-ttl">Could not read captures</div>
+        <div class="center-sub" style="color:#c0392b;font-size:12px;margin-top:8px">${loadError}</div>
+        <div class="center-sub" style="margin-top:8px">Tap ↻ to retry.</div>
+      </div>`;
+    } else if (totalLoaded > 0) {
+      const { mon, sun } = getWeekBounds(weekOffset);
+      const sample = allItems[0];
+      const rawId  = sample ? sample.id : '—';
+      const rawDate = sample ? sample.saveDate : '—';
+      const parsed = sample ? parseDate(sample.id || sample.saveDate) : null;
+      const parsedStr = parsed ? (isNaN(parsed) ? 'Invalid Date' : parsed.toISOString()) : '—';
+      container.innerHTML = `<div class="center-msg">
+        <div class="center-icon">📅</div>
+        <div class="center-eyebrow">Wrong week?</div>
+        <div class="center-ttl">${totalLoaded} capture${totalLoaded !== 1 ? 's' : ''} loaded — none this week</div>
+        <div class="center-sub">Showing ${fmtShort(mon)} – ${fmtShort(sun)}.<br>Use ← to go back a week, or tap ↻ to refresh.</div>
+        <div class="center-sub" style="font-size:10px;margin-top:12px;color:#a9bdb6;word-break:break-all">
+          DEBUG — raw id: "${rawId}"<br>
+          raw saveDate: "${rawDate}"<br>
+          parsed as: ${parsedStr}
+        </div>
+      </div>`;
+    } else {
+      container.innerHTML = `<div class="center-msg">
+        <div class="center-icon">📭</div>
+        <div class="center-eyebrow">Nothing yet</div>
+        <div class="center-ttl">No captures found</div>
+        <div class="center-sub">Add items in the capture app, then tap ↻ to refresh.</div>
+      </div>`;
+    }
+    return;
+  }
+  if (!cardQueue.length) {
+    const s = getVoteSummary(items);
+    container.innerHTML = `<div class="all-done">
+      <div style="font-size:48px;margin-bottom:4px">✓</div>
+      <div class="all-done-eyebrow">All done</div>
+      <div class="all-done-ttl">You've voted on everything</div>
+      <div class="all-done-sub">${items.length} items · ${s.go} Go · ${s.discuss} Discuss · ${s.archive} Archive</div>
+      <button class="btn-results" onclick="switchTab('results')">See Results →</button>
+    </div>`;
+    return;
+  }
+
+  const total = items.length;
+  const voted = total - cardQueue.length;
+  container.innerHTML = `
+    <div class="vote-counter">${voted} of ${total} voted</div>
+    <div class="card-arena" id="cardArena">
+      <div class="card-stack" id="cardStack"></div>
+    </div>
+    <div class="vote-btns">
+      <button class="vbtn vbtn-no"   onclick="vote('NO')"   aria-label="No">👎</button>
+      <button class="vbtn vbtn-skip" onclick="vote('SKIP')" aria-label="Skip">⏭</button>
+      <button class="vbtn vbtn-yes"  onclick="vote('YES')"  aria-label="Yes">👍</button>
+    </div>`;
+
+  buildCardStack();
+}
+
+function buildCardStack() {
+  const stack = document.getElementById('cardStack');
+  if (!stack) return;
+  stack.innerHTML = '';
+  cardQueue.slice(0, 3).forEach((item, i) => {
+    const card = createSwipeCard(item);
+    card.classList.add(i === 0 ? 'top' : i === 1 ? 'behind-1' : 'behind-2');
+    stack.appendChild(card);
+  });
+  const top = stack.querySelector('.top');
+  if (top) attachSwipe(top);
+}
+
+function createSwipeCard(item) {
+  const div = document.createElement('div');
+  div.className = 'swipe-card';
+  div.dataset.itemId = item.id;
+  const d  = parseDate(item.saveDate || item.id);
+  const ds = isNaN(d) ? '' : fmtShort(d);
+  div.innerHTML = `
+    ${item.imageUrl
+      ? `<img class="sc-img" src="${escA(item.imageUrl)}" alt="Inspiration"
+              onclick="event.stopPropagation();openLightbox(this.src)"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+      : ''}
+    <div class="sc-img-ph" style="${item.imageUrl ? 'display:none' : ''}">🖼</div>
+    <div class="sc-body">
+      <div class="sc-meta">
+        <span class="sc-who">${esc(item.savedBy)}</span>
+        <span class="sc-date">${ds}</span>
+      </div>
+      <div class="sc-note">${esc(item.note)}</div>
+      ${item.sourceUrl ? `<a class="sc-link" href="${escA(item.sourceUrl)}" target="_blank" rel="noopener">View Source ↗</a>` : ''}
+    </div>
+    <div class="ov-yes">✓</div>
+    <div class="ov-no">✕</div>`;
+  return div;
+}
+
+// ── Swipe ─────────────────────────────────────────────────────────
+function attachSwipe(card) {
+  card.addEventListener('touchstart',  onTS, { passive:true });
+  card.addEventListener('touchmove',   onTM, { passive:false });
+  card.addEventListener('touchend',    onTE);
+  card.addEventListener('touchcancel', onTE);
+  card.addEventListener('mousedown',   onMD);
+}
+function onTS(e) {
+  swipeState = { active:true, startX:e.touches[0].clientX, startY:e.touches[0].clientY, curX:0, curY:0 };
+}
+function onTM(e) {
+  if (!swipeState.active) return;
+  e.preventDefault();
+  swipeState.curX = e.touches[0].clientX - swipeState.startX;
+  swipeState.curY = e.touches[0].clientY - swipeState.startY;
+  moveCard(e.currentTarget, swipeState.curX, swipeState.curY);
+}
+function onTE(e) {
+  if (!swipeState.active) return;
+  swipeState.active = false;
+  endSwipe(e.currentTarget, swipeState.curX);
+}
+let _md = false;
+function onMD(e) {
+  _md = true;
+  swipeState = { active:true, startX:e.clientX, startY:e.clientY, curX:0, curY:0 };
+  const onMM = ev => { if (!_md) return; swipeState.curX = ev.clientX - swipeState.startX; moveCard(e.currentTarget, swipeState.curX, ev.clientY - swipeState.startY); };
+  const onMU = () => { if (!_md) return; _md = false; endSwipe(e.currentTarget, swipeState.curX); document.removeEventListener('mousemove', onMM); document.removeEventListener('mouseup', onMU); };
+  document.addEventListener('mousemove', onMM);
+  document.addEventListener('mouseup',  onMU);
+}
+function moveCard(card, dx, dy) {
+  card.style.transform = `translateX(${dx}px) translateY(${dy*.25}px) rotate(${dx*.07}deg)`;
+  const T = 25;
+  const yes = card.querySelector('.ov-yes');
+  const no  = card.querySelector('.ov-no');
+  if (dx > T)       { yes.style.opacity = Math.min((dx-T)/65,.8); no.style.opacity = 0; }
+  else if (dx < -T) { no.style.opacity  = Math.min((-dx-T)/65,.8); yes.style.opacity = 0; }
+  else              { yes.style.opacity = no.style.opacity = 0; }
+}
+function endSwipe(card, dx) {
+  if (Math.abs(dx) >= SWIPE_THRESHOLD) {
+    animateOut(card, dx > 0 ? 'right' : 'left');
+    vote(dx > 0 ? 'YES' : 'NO', false);
+  } else {
+    card.style.transition = 'transform .35s cubic-bezier(.34,1.56,.64,1)';
+    card.style.transform  = '';
+    card.querySelector('.ov-yes').style.opacity = 0;
+    card.querySelector('.ov-no').style.opacity  = 0;
+    setTimeout(() => { card.style.transition = ''; }, 350);
+  }
+}
+function animateOut(card, dir) {
+  card.style.transition = 'transform .38s ease-in,opacity .38s ease-in';
+  card.style.transform  = `translateX(${dir==='right'?'160%':'-160%'}) rotate(${dir==='right'?28:-28}deg)`;
+  card.style.opacity    = '0';
+}
+
+// ── Vote logic ────────────────────────────────────────────────────
+async function vote(v, animate = true) {
+  const user = document.getElementById('nameSelect').value;
+  if (!user) { toast('Select your name first'); return; }
+  const item = cardQueue[0];
+  if (!item) return;
+  const { week } = getWeekBounds(weekOffset);
+  if (!localVotes[week]) localVotes[week] = {};
+  localVotes[week][item.id] = v;
+  localStorage.setItem('pavoi_votes', JSON.stringify(localVotes));
+  if (animate && v !== 'SKIP') {
+    const topCard = document.querySelector('#cardStack .top');
+    if (topCard) {
+      topCard.querySelector('.ov-yes').style.opacity = v==='YES'?.7:0;
+      topCard.querySelector('.ov-no').style.opacity  = v==='NO' ?.7:0;
+      animateOut(topCard, v==='YES'?'right':'left');
+    }
+  }
+  if (v !== 'SKIP') submitVoteToForm({ voter:user, itemId:item.id, vote:v, week }).catch(console.error);
+  cardQueue.shift();
+  setTimeout(() => { buildVoteQueue(); renderVoteView(); updateBadges(); renderResultsGrid(); }, animate ? 320 : 0);
+}
+async function submitVoteToForm({ voter, itemId, vote, week }) {
+  const url = `https://docs.google.com/forms/d/e/${CONFIG.VOTE_FORM_ID}/formResponse`;
+  const p   = new URLSearchParams();
+  p.append(CONFIG.VOTE_FIELD_VOTER, voter);
+  p.append(CONFIG.VOTE_FIELD_ITEM,  itemId);
+  p.append(CONFIG.VOTE_FIELD_VOTE,  vote);
+  p.append(CONFIG.VOTE_FIELD_WEEK,  week);
+  await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() });
+}
+
+// ── Results ───────────────────────────────────────────────────────
+function setFilter(f) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('on', b.dataset.filter === f));
+  renderResultsGrid();
+}
+function renderResultsGrid() {
+  const grid  = document.getElementById('resultsGrid');
+  if (!grid) return;
+  const items = getWeekItems();
+  const vm    = getVoteMap();
+  let filtered = activeFilter === 'all' ? items : items.filter(it => getItemStatus(it).status === activeFilter);
+  if (!filtered.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px 16px">
+      <div style="font-size:32px;margin-bottom:10px;opacity:.4">📭</div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#a9bdb6">No items here</div>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(item => {
+    const { status, yes, no, total, pct } = getItemStatus(item);
+    const votes   = vm[item.id] || {};
+    const badgeT  = status==='go'?'Go':status==='discuss'?'Discuss':status==='archive'?'Archive':'Pending';
+    const dotsHtml = CONFIG.TEAM.map(n => {
+      const v = votes[n];
+      return `<span class="vote-dot ${v==='YES'?'yes':v==='NO'?'no':'empty'}" title="${n}: ${v||'—'}"></span>`;
+    }).join('');
+    return `
+      <div class="result-card" onclick="openModal('${escA(item.id)}')">
+        ${item.imageUrl
+          ? `<img class="rc-img" src="${escA(item.imageUrl)}" alt="" loading="lazy"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+          : ''}
+        <div class="rc-img-ph" style="${item.imageUrl?'display:none':''}">🖼</div>
+        <div class="rc-body">
+          <span class="rc-badge badge-${status}">${badgeT}</span>
+          <div class="rc-note">${esc(item.note)}</div>
+          <div class="rc-who">${esc(item.savedBy)}</div>
+          <div class="rc-votes">${dotsHtml}<span class="rc-pct">${total?pct+'%':''}</span></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openModal(itemId) {
+  const item = allItems.find(it => it.id === itemId);
+  if (!item) return;
+  const { status, yes, no, total, pct } = getItemStatus(item);
+  const votes  = getVoteMap()[itemId] || {};
+  const badgeT = status==='go'?'Go':status==='discuss'?'Discuss':status==='archive'?'Archive':'Pending';
+  const d  = parseDate(item.saveDate || item.id);
+  const ds = isNaN(d) ? '' : fmtDate(d);
+  document.getElementById('modalContent').innerHTML = `
+    ${item.imageUrl ? `<img class="modal-img" src="${escA(item.imageUrl)}" alt="" onclick="openLightbox(this.src)">` : ''}
+    <span class="modal-badge rc-badge badge-${status}">${badgeT}</span>
+    <div class="modal-note">${esc(item.note)}</div>
+    <div class="modal-meta">
+      By ${esc(item.savedBy)} · ${ds}
+      ${item.sourceUrl ? ` · <a href="${escA(item.sourceUrl)}" target="_blank" rel="noopener">View Source ↗</a>` : ''}
+    </div>
+    <div class="modal-votes-ttl">Team Votes · ${yes}/${total} Yes (${pct}%)</div>
+    <div class="modal-bar"><div class="modal-bar-fill" style="width:${pct}%"></div></div>
+    <div style="margin-top:14px">
+      ${CONFIG.TEAM.map(n => {
+        const v = votes[n];
+        return `<div class="vote-row">
+          <span class="vote-name">${esc(n)}</span>
+          <span class="vote-val ${v==='YES'?'yes':v==='NO'?'no':'empty'}">${v||'—'}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+  document.getElementById('modalBg').classList.add('on');
+}
+function openLightbox(src) {
+  if (!src) return;
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('on');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('on');
+  document.getElementById('lightboxImg').src = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalBg')) document.getElementById('modalBg').classList.remove('on');
+}
+
+function updateBadges() {
+  const items     = getWeekItems();
+  const remaining = items.filter(it => !hasUserVoted(it.id)).length;
+  document.getElementById('voteBadge').textContent    = remaining;
+  document.getElementById('resultsBadge').textContent = items.length;
+}
+function getVoteSummary(items) {
+  const c = { go:0, discuss:0, archive:0, pending:0 };
+  items.forEach(it => c[getItemStatus(it).status]++);
+  return c;
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────
+function switchTab(tab) {
+  ['vote','results'].forEach(t => {
+    const cap = t.charAt(0).toUpperCase()+t.slice(1);
+    document.getElementById(`view${cap}`).classList.toggle('active', t===tab);
+    document.getElementById(`tab${cap}`).classList.toggle('active', t===tab);
+  });
+}
+
+// ── Exports ───────────────────────────────────────────────────────
+function exportSlack() {
+  const { mon, sun, week } = getWeekBounds(weekOffset);
+  const items   = getWeekItems();
+  const go      = items.filter(it => getItemStatus(it).status==='go');
+  const discuss = items.filter(it => getItemStatus(it).status==='discuss');
+  const archive = items.filter(it => getItemStatus(it).status==='archive');
+  const fmtIt   = it => {
+    const { pct, total } = getItemStatus(it);
+    const src = it.sourceUrl ? ` | <${it.sourceUrl}|View Source>` : '';
+    const img = it.imageUrl  ? ` | <${it.imageUrl}|Image>` : '';
+    return `• "${it.note}" — _${it.savedBy}_ _(${pct}%, ${total} votes)_${src}${img}`;
+  };
+  let msg = `*PAVOI INSPIRE DIGEST · ${fmtShort(mon).toUpperCase()} – ${fmtShort(sun).toUpperCase()}, ${mon.getFullYear()}*\n_${week} · ${items.length} captures_\n\n`;
+  if (go.length)      { msg += `✓ *GO* — ${go.length} item${go.length>1?'s':''}\n`      + go.map(fmtIt).join('\n') + '\n\n'; }
+  if (discuss.length) { msg += `↗ *DISCUSS* — ${discuss.length} item${discuss.length>1?'s':''}\n` + discuss.map(fmtIt).join('\n') + '\n\n'; }
+  if (archive.length) { msg += `— *ARCHIVE* — ${archive.length} item${archive.length>1?'s':''}\n` + archive.map(fmtIt).join('\n'); }
+  copyText(msg, 'Slack digest copied');
+}
+
+function exportFigma() {
+  const { week, mon, sun } = getWeekBounds(weekOffset);
+  const items   = getWeekItems();
+  const mapIt   = it => { const s = getItemStatus(it); return { id:it.id, note:it.note, saved_by:it.savedBy, save_date:it.saveDate, image_url:it.imageUrl, source_url:it.sourceUrl, status:s.status.toUpperCase(), yes_votes:s.yes, no_votes:s.no, total_votes:s.total, yes_pct:s.pct }; };
+  const payload = { pavoi_inspire_digest: { week, period:`${fmtDate(mon)} – ${fmtDate(sun)}`, generated:new Date().toISOString(), total_captures:items.length, voters:CONFIG.TEAM, go_items:items.filter(it=>getItemStatus(it).status==='go').map(mapIt), discuss_items:items.filter(it=>getItemStatus(it).status==='discuss').map(mapIt), archive_items:items.filter(it=>getItemStatus(it).status==='archive').map(mapIt), pending_items:items.filter(it=>getItemStatus(it).status==='pending').map(mapIt) } };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `pavoi-inspire-${week}.json`; a.click();
+  URL.revokeObjectURL(url);
+  flash('Figma JSON downloaded');
+}
+
+function exportClaudePrompt() {
+  const { week, mon, sun } = getWeekBounds(weekOffset);
+  const items   = getWeekItems();
+  const go      = items.filter(it => getItemStatus(it).status==='go');
+  const discuss = items.filter(it => getItemStatus(it).status==='discuss');
+  let p = `PAVOI INSPIRE — TREND ANALYSIS BRIEF\nWeek: ${week} (${fmtShort(mon)}–${fmtShort(sun)}, ${mon.getFullYear()})\n${'═'.repeat(60)}\n\n`;
+  p += `You are a product and trend strategist for PAVOI, a premium DTC jewelry brand. The team of ${CONFIG.TEAM.length} (${CONFIG.TEAM.map(n=>n.split(' ')[0]).join(', ')}) captured and blind-voted on ${items.length} inspiration items this week.\n\n`;
+  p += `TASK:\n1. Identify the top 3–5 emerging trends in the GO + DISCUSS items\n2. Flag any competitive threats or fast-moving opportunities\n3. Suggest 2–3 specific product concepts or SKU directions\n4. Surface marketing angles visible in what the team is saving\n5. Note what PAVOI should be watching that isn't captured here\n\nOUTPUT: Trends → Opportunities → Product Ideas → Marketing Angles → Watch List\n\n${'─'.repeat(60)}\n\n`;
+  if (go.length) {
+    p += `GO ITEMS (${go.length}) — ${CONFIG.THRESHOLD_GO}%+ team yes:\n\n`;
+    go.forEach((it,i) => {
+      const s = getItemStatus(it);
+      p += `${i+1}. "${it.note}"\n   By: ${it.savedBy}${it.saveDate?' on '+it.saveDate.slice(0,10):''}\n`;
+      if (it.sourceUrl) p += `   Source: ${it.sourceUrl}\n`;
+      if (it.imageUrl)  p += `   Image: ${it.imageUrl}\n`;
+      p += `   Votes: ${s.yes} YES / ${s.no} NO (${s.pct}%)\n\n`;
+    });
+  }
+  if (discuss.length) {
+    p += `DISCUSS ITEMS (${discuss.length}) — ${CONFIG.THRESHOLD_DISCUSS}–${CONFIG.THRESHOLD_GO-1}% yes:\n\n`;
+    discuss.forEach((it,i) => {
+      const s = getItemStatus(it);
+      p += `${i+1}. "${it.note}"\n   By: ${it.savedBy}${it.saveDate?' on '+it.saveDate.slice(0,10):''}\n`;
+      if (it.sourceUrl) p += `   Source: ${it.sourceUrl}\n`;
+      if (it.imageUrl)  p += `   Image: ${it.imageUrl}\n`;
+      p += `   Votes: ${s.yes} YES / ${s.no} NO (${s.pct}%)\n\n`;
+    });
+  }
+  p += `${'─'.repeat(60)}\nTotal: ${items.length} captures | ${go.length} Go | ${discuss.length} Discuss | ${items.filter(it=>getItemStatus(it).status==='archive').length} Archive\n`;
+  copyText(p, 'Claude prompt copied');
+}
+
+async function copyText(text, msg) {
+  try { await navigator.clipboard.writeText(text); }
+  catch {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  flash(msg);
+}
+function flash(msg) {
+  const el = document.getElementById('copyFlash');
+  el.textContent = msg.toUpperCase();
+  el.classList.add('on');
+  clearTimeout(_copyFlashTimer);
+  _copyFlashTimer = setTimeout(() => el.classList.remove('on'), 2500);
+}
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg.toUpperCase();
+  el.classList.add('on');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('on'), 3000);
+}
+function esc(s)  { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escA(s) { return esc(s); }
+
+init();
+</script>
+</body>
+</html>
