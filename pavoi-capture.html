@@ -236,8 +236,9 @@
   <div id="successState" style="display:none; flex-direction:column; align-items:center; justify-content:center; padding: 60px 32px; text-align:center; min-height: 60vh;">
     <div style="font-size: 36px; margin-bottom: 20px; color: var(--gold);">✦</div>
     <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 12px;">Saved</div>
-    <div style="font-size: 20px; font-weight: 300; margin-bottom: 8px;">Queued for Friday digest.</div>
-    <div style="font-size: 13px; color: var(--muted); margin-bottom: 36px;" id="successName"></div>
+    <div style="font-size: 20px; font-weight: 300; margin-bottom: 8px;">Submitted.</div>
+    <div style="font-size: 13px; color: var(--muted); margin-bottom: 4px;" id="successName"></div>
+    <div style="font-size: 12px; color: #555; margin-bottom: 36px;">Verify the row landed in your Google Sheet.</div>
     <div style="display:flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
       <button onclick="resetForm()" style="background: var(--gold); color: #0A0A0A; border: none; border-radius: 6px; padding: 12px 24px; font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; font-family: inherit;">Save Another ✦</button>
       <button onclick="window.close()" style="background: none; border: 1px solid var(--border); border-radius: 6px; padding: 12px 24px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; color: var(--muted); font-family: inherit;">Close</button>
@@ -471,21 +472,15 @@
     btn.disabled = true;
     btn.textContent = 'Saving…';
 
-    // Submit via GET to Apps Script — reads real response to confirm success
+    // Submit via no-cors GET to Apps Script.
+    // The request reaches the server and the sheet is written —
+    // we just can't read the response back due to browser CORS policy.
     const queryString = data.toString();
-    const url = PAVOI_CONFIG.formAction + '?' + queryString;
+    const submitUrl = PAVOI_CONFIG.formAction + '?' + queryString;
 
     try {
-      const response = await fetch(url);
-      const result = await response.json();
-
-      if (result.status === 'ok') {
-        showSuccessState(savedBy);
-      } else {
-        showStatus('error', 'Something went wrong: ' + (result.message || 'Unknown error. Check your Apps Script logs.'));
-        btn.disabled = false;
-        btn.textContent = 'Save to PAVOI Inspire ✦';
-      }
+      await fetch(submitUrl, { mode: 'no-cors' });
+      showSuccessState(savedBy);
     } catch (err) {
       showStatus('error', 'Could not reach the server. Check your internet connection and try again.');
       btn.disabled = false;
