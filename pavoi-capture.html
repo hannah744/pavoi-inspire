@@ -10,23 +10,23 @@
 
   <script>
     const PAVOI_CONFIG = {
-      formAction: "https://docs.google.com/forms/d/e/1FAIpQLScxVaTcA6HuDAmeWIl2jclsoOm5M47t8uzLpHW9BsneGKYArw/formResponse",
+      formAction: "https://script.google.com/a/macros/pavoi.com/s/AKfycbxmwjGRKN9OP2wmsXOhf3LzHO9PWGogCBTseKIsVPiFLxmUilf-81DRpqm7oVv8VgF8/exec",
       fields: {
-        url:          "entry.764861048",
-        platform:     "entry.707029538",
-        contentType:  "entry.1754516628",
-        brand:        "entry.1879819265",
-        price:        "entry.1423837269",
-        reviewScore:  "entry.1515599051",
-        reviewCount:  "entry.90512904",
-        likes:        "entry.1045979261",
-        comments:     "entry.1263138574",
-        saves:        "entry.402845346",
-        savedBy:      "entry.1531882183",
-        saveDate:     "entry.1506116282",
-        note:         "entry.345469081",
-        tags:         "entry.1716445891",
-        urgent:       "entry.151443147"
+        url:          "url",
+        platform:     "platform",
+        contentType:  "contentType",
+        brand:        "brand",
+        price:        "price",
+        reviewScore:  "reviewScore",
+        reviewCount:  "reviewCount",
+        likes:        "likes",
+        comments:     "comments",
+        saves:        "saves",
+        savedBy:      "savedBy",
+        saveDate:     "saveDate",
+        note:         "note",
+        tags:         "tags",
+        urgent:       "urgent"
       },
       team: [
         "Hannah Samlin",
@@ -231,9 +231,6 @@
   </div>
 
   <div class="status-banner" id="statusBanner"></div>
-
-  <!-- Hidden iframe for form submission -->
-  <iframe id="submitFrame" name="submitFrame" style="display:none;"></iframe>
 
   <!-- Success state -->
   <div id="successState" style="display:none; flex-direction:column; align-items:center; justify-content:center; padding: 60px 32px; text-align:center; min-height: 60vh;">
@@ -474,32 +471,26 @@
     btn.disabled = true;
     btn.textContent = 'Saving…';
 
-    // Build and submit a hidden form targeting a hidden iframe
-    // More reliable than no-cors fetch with Google Forms
-    const iframe = document.getElementById('submitFrame');
-    const hiddenForm = document.createElement('form');
-    hiddenForm.method = 'POST';
-    hiddenForm.action = PAVOI_CONFIG.formAction;
-    hiddenForm.target = 'submitFrame';
-    hiddenForm.style.display = 'none';
+    // Submit via GET to Apps Script — reads real response to confirm success
+    const queryString = data.toString();
+    const url = PAVOI_CONFIG.formAction + '?' + queryString;
 
-    for (const [key, value] of data.entries()) {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = value;
-      hiddenForm.appendChild(input);
+    try {
+      const response = await fetch(url);
+      const result = await response.json();
+
+      if (result.status === 'ok') {
+        showSuccessState(savedBy);
+      } else {
+        showStatus('error', 'Something went wrong: ' + (result.message || 'Unknown error. Check your Apps Script logs.'));
+        btn.disabled = false;
+        btn.textContent = 'Save to PAVOI Inspire ✦';
+      }
+    } catch (err) {
+      showStatus('error', 'Could not reach the server. Check your internet connection and try again.');
+      btn.disabled = false;
+      btn.textContent = 'Save to PAVOI Inspire ✦';
     }
-
-    document.body.appendChild(hiddenForm);
-
-    // Listen for iframe load = form submitted successfully
-    iframe.onload = () => {
-      hiddenForm.remove();
-      showSuccessState(savedBy);
-    };
-
-    hiddenForm.submit();
   }
 
   function showSuccessState(savedBy) {
