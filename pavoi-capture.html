@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PAVOI Inspire">
+  <title>PAVOI ✦ Inspire</title>
+
+  <script>
+    const PAVOI_CONFIG = {
+      formAction: "https://docs.google.com/forms/d/e/1FAIpQLScxVaTcA6HuDAmeWIl2jclsoOm5M47t8uzLpHW9BsneGKYArw/formResponse",
+      fields: {
+        url:          "entry.764861048",
+        platform:     "entry.707029538",
+        contentType:  "entry.1754516628",
+        brand:        "entry.1879819265",
+        price:        "entry.1423837269",
+        reviewScore:  "entry.1515599051",
+        reviewCount:  "entry.90512904",
+        likes:        "entry.1045979261",
+        comments:     "entry.1263138574",
+        saves:        "entry.402845346",
+        savedBy:      "entry.1531882183",
+        saveDate:     "entry.1506116282",
+        note:         "entry.345469081",
+        tags:         "entry.1716445891",
+        urgent:       "entry.151443147"
+      },
+      team: [
+        "Hannah Samlin",
+        "Rita Lopes",
+        "Tal Masica",
+        "Shynade Austen",
+        "Tara Ganon",
+        "Kelly Hallinan"
+      ]
+    };
+  </script>
+
+  <style>
+    :root {
+      --gold:       #C9A84C;
+      --gold-light: #E8C96A;
+      --dark:       #0A0A0A;
+      --surface:    #141414;
+      --surface-2:  #1C1C1C;
+      --border:     #2A2A2A;
+      --text:       #F0EEE8;
+      --muted:      #777;
+      --red:        #E05252;
+      --green:      #4CAF70;
+      --radius:     6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      min-height: 100%;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 0 env(safe-area-inset-bottom, 24px);
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px 14px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-logo { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: var(--gold); }
+    .header-title { font-size: 13px; color: var(--muted); }
+
+    .status-banner {
+      display: none;
+      margin: 16px 20px 0;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+    .status-banner.error   { background: #1F0E0E; border: 1px solid #4A1A1A; color: var(--red); }
+    .status-banner.success { background: #0C1F10; border: 1px solid #1A4A20; color: var(--green); }
+    .status-banner.warning { background: #1A1500; border: 1px solid #3A3000; color: #F5C842; }
+
+    .form { padding: 20px 20px 32px; }
+
+    .field-group { margin-bottom: 18px; }
+    .field-group.half-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+    .field-group.third-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 18px; }
+
+    label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    label .required { color: var(--red); margin-left: 2px; }
+
+    input[type="text"],
+    input[type="url"],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 11px 13px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="url"]:focus,
+    select:focus,
+    textarea:focus { outline: none; border-color: var(--gold); background: var(--surface-2); }
+
+    input::placeholder, textarea::placeholder { color: #444; }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 34px;
+      cursor: pointer;
+    }
+
+    select option { background: var(--surface-2); color: var(--text); }
+
+    textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+    textarea.error { border-color: var(--red); }
+
+    .url-input { font-family: 'Courier New', monospace; font-size: 12px; color: #AAA; }
+
+    .tag-suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+    .tag-chip {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .tag-chip:hover, .tag-chip.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
+
+    .divider { height: 1px; background: var(--border); margin: 24px 0; }
+    .section-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: #555; font-weight: 600; margin-bottom: 16px; }
+
+    .urgent-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .urgent-label { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+    .urgent-label .dot { width: 8px; height: 8px; border-radius: 50%; background: #E05252; }
+
+    .toggle { position: relative; width: 44px; height: 26px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track {
+      position: absolute; inset: 0;
+      background: #2A2A2A; border-radius: 13px; cursor: pointer; transition: background 0.2s;
+    }
+    .toggle-track::after {
+      content: ''; position: absolute; top: 3px; left: 3px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #555; transition: transform 0.2s, background 0.2s;
+    }
+    .toggle input:checked + .toggle-track { background: rgba(201,168,76,0.3); }
+    .toggle input:checked + .toggle-track::after { transform: translateX(18px); background: var(--gold); }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--gold);
+      color: #0A0A0A;
+      border: none;
+      border-radius: var(--radius);
+      padding: 16px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+      margin-top: 24px;
+      font-family: inherit;
+    }
+    .submit-btn:hover  { background: var(--gold-light); }
+    .submit-btn:active { opacity: 0.85; }
+    .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <span class="header-logo">PAVOI ✦ Inspire</span>
+    <span class="header-title">New Capture</span>
+  </div>
+
+  <div class="status-banner" id="statusBanner"></div>
+
+  <form class="form" id="captureForm" onsubmit="handleSubmit(event)">
+
+    <!-- URL -->
+    <div class="field-group">
+      <label>Source URL <span class="required">*</span></label>
+      <input type="url" id="f-url" class="url-input" placeholder="https://" required>
+    </div>
+
+    <!-- Platform + Content Type -->
+    <div class="field-group half-grid">
+      <div>
+        <label>Platform</label>
+        <select id="f-platform">
+          <option value="E-commerce">E-commerce</option>
+          <option value="Instagram">Instagram</option>
+          <option value="TikTok">TikTok</option>
+          <option value="Editorial">Editorial</option>
+          <option value="Pinterest">Pinterest</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label>Content Type</label>
+        <select id="f-content-type">
+          <option value="Product Photo">Product Photo</option>
+          <option value="Product Listing">Product Listing</option>
+          <option value="Social Post">Social Post</option>
+          <option value="Video">Video</option>
+          <option value="Trend Report">Trend Report</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Brand + Price -->
+    <div class="field-group half-grid">
+      <div>
+        <label>Brand / Creator</label>
+        <input type="text" id="f-brand" placeholder="e.g. Gorjana">
+      </div>
+      <div>
+        <label>Price</label>
+        <input type="text" id="f-price" placeholder="$48.00">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <p class="section-label">Metrics (optional)</p>
+
+    <div class="field-group third-grid">
+      <div>
+        <label>★ Score</label>
+        <input type="text" id="f-review-score" placeholder="4.8">
+      </div>
+      <div>
+        <label>Reviews</label>
+        <input type="text" id="f-review-count" placeholder="2,400">
+      </div>
+      <div>
+        <label>❤ Likes</label>
+        <input type="text" id="f-likes" placeholder="12.4k">
+      </div>
+    </div>
+
+    <div class="field-group half-grid">
+      <div>
+        <label>💬 Comments</label>
+        <input type="text" id="f-comments" placeholder="320">
+      </div>
+      <div>
+        <label>🔖 Saves</label>
+        <input type="text" id="f-saves" placeholder="5.1k">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <p class="section-label">Your Take</p>
+
+    <!-- Saved By — dropdown with team names -->
+    <div class="field-group">
+      <label>Your Name <span class="required">*</span></label>
+      <select id="f-saved-by" required>
+        <option value="">Select your name</option>
+        <!-- populated by JS from PAVOI_CONFIG.team -->
+      </select>
+    </div>
+
+    <!-- Inspiration note — required -->
+    <div class="field-group">
+      <label>Why are you saving this? <span class="required">*</span></label>
+      <textarea
+        id="f-note"
+        placeholder="What caught your eye? What are you asking the team to look at? Be specific — this is your brief to the group."
+        required
+      ></textarea>
+    </div>
+
+    <!-- Tags -->
+    <div class="field-group">
+      <label>Aesthetic Tags</label>
+      <input type="text" id="f-tags" placeholder="pearl, minimal, coastal, $25–50">
+      <div class="tag-suggestions" id="tagSuggestions"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Urgent -->
+    <div class="urgent-row">
+      <span class="urgent-label">
+        <span class="dot"></span>
+        Flag as urgent — surface before Friday digest
+      </span>
+      <label class="toggle">
+        <input type="checkbox" id="f-urgent">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">Save to PAVOI Inspire ✦</button>
+
+  </form>
+</div>
+
+<script>
+  const TAG_VOCAB = [
+    'pearl', 'colored gemstone', 'diamond/CZ', 'gold vermeil', 'sterling silver',
+    'enamel', 'beaded', 'minimal', 'maximalist', 'Y2K', 'coastal', 'dark romantic',
+    'clean girl', 'celestial', 'initial', 'heart', 'evil eye', 'birthstone',
+    'floral', 'geometric', 'animal', 'under $25', '$25–50', '$50–100', '$100+',
+    'silhouette', 'color palette', 'motif', 'material', 'styling',
+    'Essence', 'Hoops', 'Waterproof', 'Gifting', 'Charms'
+  ];
+
+  function renderTagChips() {
+    const container = document.getElementById('tagSuggestions');
+    TAG_VOCAB.forEach(tag => {
+      const chip = document.createElement('span');
+      chip.className = 'tag-chip';
+      chip.textContent = tag;
+      chip.addEventListener('click', () => toggleTag(chip, tag));
+      container.appendChild(chip);
+    });
+  }
+
+  function toggleTag(chip, tag) {
+    chip.classList.toggle('active');
+    const input = document.getElementById('f-tags');
+    let tags = input.value.split(',').map(t => t.trim()).filter(Boolean);
+    if (chip.classList.contains('active')) {
+      if (!tags.includes(tag)) tags.push(tag);
+    } else {
+      tags = tags.filter(t => t !== tag);
+    }
+    input.value = tags.join(', ');
+  }
+
+  function renderTeamDropdown() {
+    const sel = document.getElementById('f-saved-by');
+    PAVOI_CONFIG.team.forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      sel.appendChild(opt);
+    });
+    // Restore last used name
+    const saved = localStorage.getItem('pavoi-name');
+    if (saved) sel.value = saved;
+  }
+
+  function prefillFromParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('url'))   document.getElementById('f-url').value   = params.get('url');
+    if (params.get('brand')) document.getElementById('f-brand').value = params.get('brand');
+    if (params.get('price')) document.getElementById('f-price').value = params.get('price');
+    if (params.get('platform')) {
+      const sel = document.getElementById('f-platform');
+      for (let opt of sel.options) {
+        if (opt.value.toLowerCase() === params.get('platform').toLowerCase()) { sel.value = opt.value; break; }
+      }
+    }
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const note    = document.getElementById('f-note').value.trim();
+    const savedBy = document.getElementById('f-saved-by').value;
+
+    if (!note) {
+      showStatus('error', 'Inspiration note is required. Tell the team why you saved this.');
+      document.getElementById('f-note').classList.add('error');
+      document.getElementById('f-note').focus();
+      return;
+    }
+
+    if (!savedBy) {
+      showStatus('error', 'Select your name.');
+      document.getElementById('f-saved-by').focus();
+      return;
+    }
+
+    // Remember name for next time
+    localStorage.setItem('pavoi-name', savedBy);
+
+    const today = new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+    const f = PAVOI_CONFIG.fields;
+    const data = new URLSearchParams();
+
+    data.append(f.url,         document.getElementById('f-url').value.trim());
+    data.append(f.platform,    document.getElementById('f-platform').value);
+    data.append(f.contentType, document.getElementById('f-content-type').value);
+    data.append(f.brand,       document.getElementById('f-brand').value.trim());
+    data.append(f.price,       document.getElementById('f-price').value.trim());
+    data.append(f.reviewScore, document.getElementById('f-review-score').value.trim());
+    data.append(f.reviewCount, document.getElementById('f-review-count').value.trim());
+    data.append(f.likes,       document.getElementById('f-likes').value.trim());
+    data.append(f.comments,    document.getElementById('f-comments').value.trim());
+    data.append(f.saves,       document.getElementById('f-saves').value.trim());
+    data.append(f.savedBy,     savedBy);
+    data.append(f.saveDate,    today);
+    data.append(f.note,        note);
+    data.append(f.tags,        document.getElementById('f-tags').value.trim());
+    data.append(f.urgent,      document.getElementById('f-urgent').checked ? 'Yes' : 'No');
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    try {
+      await fetch(PAVOI_CONFIG.formAction, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: data.toString()
+      });
+
+      showStatus('success', '✦ Saved. Queued for Friday digest.');
+      btn.textContent = 'Saved ✦';
+      setTimeout(() => { if (window.opener) window.close(); }, 1800);
+
+    } catch (err) {
+      showStatus('warning', 'Check your Google Sheets response tab to confirm the submission landed.');
+      btn.disabled = false;
+      btn.textContent = 'Save to PAVOI Inspire ✦';
+    }
+  }
+
+  function showStatus(type, msg) {
+    const el = document.getElementById('statusBanner');
+    el.className = `status-banner ${type}`;
+    el.textContent = msg;
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderTagChips();
+    renderTeamDropdown();
+    prefillFromParams();
+    document.getElementById('f-note').addEventListener('input', () => {
+      document.getElementById('f-note').classList.remove('error');
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PAVOI ✦ Inspire — Bookmarklet Setup</title>
+
+  <style>
+    :root {
+      --gold:        #C9A84C;
+      --gold-light:  #E8C96A;
+      --dark:        #0A0A0A;
+      --surface:     #141414;
+      --surface-2:   #1C1C1C;
+      --border:      #2A2A2A;
+      --text:        #F0EEE8;
+      --text-muted:  #888;
+      --red:         #E05252;
+      --green:       #4CAF70;
+      --radius:      6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container { max-width: 680px; margin: 0 auto; padding: 48px 24px 64px; }
+
+    /* Header */
+    .page-header { text-align: center; margin-bottom: 56px; }
+    .page-header .logo { font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 12px; }
+    .page-header h1 { font-size: 32px; font-weight: 300; letter-spacing: -0.01em; margin-bottom: 10px; }
+    .page-header p { font-size: 15px; color: var(--text-muted); }
+
+    /* Steps */
+    .step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 28px 32px;
+      margin-bottom: 16px;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .step-num {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .step h2 { font-size: 17px; font-weight: 500; }
+
+    .step p { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
+    .step p:last-child { margin-bottom: 0; }
+
+    .step code {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1px 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: var(--gold);
+    }
+
+    /* Field list */
+    .field-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 12px 0;
+    }
+
+    .field-tag {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .field-tag.required { border-color: #3A2A1A; color: #C9A84C; }
+
+    /* Config inputs */
+    .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+
+    label.input-label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      transition: border-color 0.15s;
+    }
+
+    input[type="text"]:focus { outline: none; border-color: var(--gold); }
+    input[type="text"]::placeholder { color: #383838; }
+
+    .url-input {
+      width: 100%;
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      color: var(--gold);
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      transition: border-color 0.15s;
+      margin-bottom: 12px;
+    }
+
+    .url-input:focus { outline: none; border-color: var(--gold); }
+    .url-input::placeholder { color: #383838; }
+
+    /* Generate button */
+    .btn-generate {
+      background: var(--gold);
+      color: var(--dark);
+      border: none;
+      border-radius: var(--radius);
+      padding: 12px 24px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.15s;
+      font-family: inherit;
+    }
+    .btn-generate:hover { background: var(--gold-light); }
+
+    /* Bookmarklet drag area */
+    .bookmarklet-area {
+      display: none;
+      margin-top: 20px;
+      padding: 24px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      text-align: center;
+    }
+
+    .bookmarklet-area.visible { display: block; }
+
+    .bookmarklet-area .drag-hint {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .bookmarklet-area .drag-hint strong { color: var(--text); }
+
+    .bm-button {
+      display: inline-block;
+      background: var(--surface);
+      border: 2px solid var(--gold);
+      border-radius: var(--radius);
+      padding: 12px 22px;
+      color: var(--gold);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: grab;
+      letter-spacing: 0.06em;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .bm-button:hover {
+      background: var(--gold);
+      color: var(--dark);
+    }
+
+    .bm-button:active { cursor: grabbing; }
+
+    .code-preview {
+      margin-top: 16px;
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      color: #555;
+      text-align: left;
+      word-break: break-all;
+      max-height: 60px;
+      overflow: hidden;
+    }
+
+    .copy-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 6px 14px;
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+
+    .copy-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* iOS section */
+    ol.ios-steps {
+      padding-left: 20px;
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    ol.ios-steps li { margin-bottom: 8px; line-height: 1.5; }
+    ol.ios-steps li strong { color: var(--text); }
+
+    .callout {
+      background: #0D1A0D;
+      border: 1px solid #1A3A1A;
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-size: 13px;
+      color: #70C070;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    /* Success copy */
+    .copy-success { color: var(--green); font-size: 12px; margin-top: 6px; display: none; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="page-header">
+    <div class="logo">PAVOI ✦ Inspire</div>
+    <h1>Bookmarklet Setup</h1>
+    <p>One-time config. Takes about 15 minutes.</p>
+  </div>
+
+  <!-- Step 1: Host the capture page -->
+  <div class="step">
+    <div class="step-header">
+      <span class="step-num">01</span>
+      <h2>Host the capture page</h2>
+    </div>
+    <p>
+      <code>pavoi-capture.html</code> needs to be accessible from a URL so the bookmarklet
+      can open it on any device. Two easy options:
+    </p>
+    <p>
+      <strong style="color: var(--text);">Option A — GitHub Pages (free, 5 min):</strong><br>
+      Create a public GitHub repo → upload <code>pavoi-capture.html</code> →
+      enable Pages in repo Settings. Your URL will be
+      <code>https://YOUR-ORG.github.io/pavoi-inspire/pavoi-capture.html</code>.
+    </p>
+    <p>
+      <strong style="color: var(--text);">Option B — Shopify:</strong><br>
+      Upload to your Shopify theme's Assets folder. URL:
+      <code>https://pavoi.com/cdn/shop/t/X/assets/pavoi-capture.html</code>.
+    </p>
+    <p style="margin-top: 12px;">Once hosted, paste the URL in Step 3 below.</p>
+  </div>
+
+  <!-- Step 2: Create Google Form -->
+  <div class="step">
+    <div class="step-header">
+      <span class="step-num">02</span>
+      <h2>Create your Google Form</h2>
+    </div>
+    <p>
+      Go to <a href="https://forms.google.com" target="_blank" style="color: var(--gold);">forms.google.com</a> →
+      New blank form. Add these fields in order (all Short Answer unless noted):
+    </p>
+    <div class="field-list">
+      <span class="field-tag required">URL ★</span>
+      <span class="field-tag">Platform (Dropdown)</span>
+      <span class="field-tag">Content Type (Dropdown)</span>
+      <span class="field-tag">Brand</span>
+      <span class="field-tag">Price</span>
+      <span class="field-tag">Review Score</span>
+      <span class="field-tag">Review Count</span>
+      <span class="field-tag">Likes</span>
+      <span class="field-tag">Comments</span>
+      <span class="field-tag">Saves</span>
+      <span class="field-tag required">Saved By ★</span>
+      <span class="field-tag">Save Date</span>
+      <span class="field-tag required">Inspiration Note (Paragraph) ★</span>
+      <span class="field-tag">Tags</span>
+      <span class="field-tag">Urgent (Dropdown: Yes / No)</span>
+    </div>
+    <p>
+      After creating the form, click <strong style="color: var(--text);">⋮ → Get pre-filled link</strong>.
+      Fill every field with a dummy value. Click "Get Link". Copy the URL.
+      Paste it somewhere temporary — you'll extract the <code>entry.XXXXXXXXX</code> IDs
+      from the URL parameters. Each <code>entry.ID</code> matches a field in order.
+    </p>
+    <p>
+      The form action URL is the same base URL with <code>viewform?...</code>
+      replaced by <code>formResponse</code>.
+    </p>
+  </div>
+
+  <!-- Step 3: Generate bookmarklet -->
+  <div class="step">
+    <div class="step-header">
+      <span class="step-num">03</span>
+      <h2>Configure &amp; generate your bookmarklet</h2>
+    </div>
+    <p>Paste your hosted capture page URL and Google Form action URL:</p>
+
+    <label class="input-label" style="margin-top: 16px;">Hosted Capture Page URL</label>
+    <input type="text" class="url-input" id="capturePageUrl"
+      placeholder="https://your-org.github.io/pavoi-inspire/pavoi-capture.html">
+
+    <label class="input-label">Google Form Action URL</label>
+    <input type="text" class="url-input" id="formActionUrl"
+      placeholder="https://docs.google.com/forms/d/e/XXXXX/formResponse">
+
+    <p style="margin-top: 16px;">Paste each <code>entry.XXXXXXXXX</code> ID (from your pre-filled link URL):</p>
+
+    <div class="config-grid">
+      <div>
+        <label class="input-label">URL</label>
+        <input type="text" id="e-url" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Platform</label>
+        <input type="text" id="e-platform" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Content Type</label>
+        <input type="text" id="e-contentType" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Brand</label>
+        <input type="text" id="e-brand" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Price</label>
+        <input type="text" id="e-price" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Review Score</label>
+        <input type="text" id="e-reviewScore" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Review Count</label>
+        <input type="text" id="e-reviewCount" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Likes</label>
+        <input type="text" id="e-likes" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Comments</label>
+        <input type="text" id="e-comments" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Saves</label>
+        <input type="text" id="e-saves" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Saved By</label>
+        <input type="text" id="e-savedBy" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Save Date</label>
+        <input type="text" id="e-saveDate" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Inspiration Note</label>
+        <input type="text" id="e-note" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Tags</label>
+        <input type="text" id="e-tags" placeholder="entry.000000000">
+      </div>
+      <div>
+        <label class="input-label">Urgent</label>
+        <input type="text" id="e-urgent" placeholder="entry.000000000">
+      </div>
+    </div>
+
+    <button class="btn-generate" onclick="generate()">Generate Bookmarklet ✦</button>
+
+    <!-- Generated bookmarklet -->
+    <div class="bookmarklet-area" id="bookmarkletArea">
+      <p class="drag-hint">
+        <strong>Drag this button</strong> to your bookmarks bar — or right-click and choose "Bookmark this link."
+      </p>
+      <a id="bookmarkletLink" class="bm-button" href="#">PAVOI ✦ Save</a>
+      <div class="code-preview" id="bookmarkletCode"></div>
+      <br>
+      <button class="copy-btn" onclick="copyCode()">Copy code</button>
+      <div class="copy-success" id="copySuccess">Copied!</div>
+    </div>
+  </div>
+
+  <!-- Step 4: iOS Shortcut -->
+  <div class="step">
+    <div class="step-header">
+      <span class="step-num">04</span>
+      <h2>iOS Shortcut (iPhone Share Sheet)</h2>
+    </div>
+    <p>
+      This lets you capture from Instagram, TikTok, or Safari with one tap via the native Share Sheet.
+      Open the <strong style="color: var(--text);">Shortcuts app</strong> → tap + to create a new shortcut.
+    </p>
+
+    <ol class="ios-steps">
+      <li>Add action: <strong>Receive</strong> — set input to <strong>URLs</strong> from <strong>Share Sheet</strong></li>
+      <li>Add action: <strong>URL</strong> — set value to:<br>
+        <code style="font-size: 11px; word-break: break-all;">
+          https://YOUR-CAPTURE-PAGE-URL?url=
+        </code>
+      </li>
+      <li>Add action: <strong>Combine Text</strong> — combine the URL from Step 2 with the <em>Shortcut Input</em> variable (URL-encoded)</li>
+      <li>Add action: <strong>Open URLs</strong> — input = combined text from Step 3</li>
+      <li>Name the shortcut <strong>PAVOI Save</strong> and set an icon</li>
+    </ol>
+
+    <div class="callout">
+      <strong style="display:block; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px;">Simpler alternative</strong>
+      Use the iOS Share Sheet → Safari → share to a <strong>Slack channel</strong> or email alias,
+      then paste the URL into <code>pavoi-capture.html</code> manually on desktop.
+      Works fine for a small team.
+    </div>
+  </div>
+
+  <!-- Step 5: Publish Sheet -->
+  <div class="step">
+    <div class="step-header">
+      <span class="step-num">05</span>
+      <h2>Publish your Google Sheet for the synthesis app</h2>
+    </div>
+    <p>
+      In the Google Sheet linked to your form: <strong style="color: var(--text);">File → Share → Publish to web</strong>.
+      Choose the response tab, format: <strong>CSV</strong>. Click Publish. Copy the URL.
+    </p>
+    <p>
+      Paste that URL into <code>pavoi-synthesis.html</code> in the <code>SHEET_CSV_URL</code>
+      config field at the top of the file.
+    </p>
+    <p style="color: #555; font-size: 13px;">
+      Note: Published CSV URLs are readable by anyone with the link. Keep this in mind for sensitive brand data.
+      If privacy is a concern, use the "paste CSV" option in the synthesis app instead.
+    </p>
+  </div>
+
+</div>
+
+<script>
+  function generate() {
+    const captureUrl = document.getElementById('capturePageUrl').value.trim();
+    const formAction = document.getElementById('formActionUrl').value.trim();
+
+    if (!captureUrl || captureUrl.includes('your-org')) {
+      alert('Paste your hosted capture page URL first.');
+      return;
+    }
+
+    if (!formAction || formAction.includes('XXXXX')) {
+      alert('Paste your Google Form action URL first.');
+      return;
+    }
+
+    const fields = {
+      url:         document.getElementById('e-url').value.trim(),
+      platform:    document.getElementById('e-platform').value.trim(),
+      contentType: document.getElementById('e-contentType').value.trim(),
+      brand:       document.getElementById('e-brand').value.trim(),
+      price:       document.getElementById('e-price').value.trim(),
+      reviewScore: document.getElementById('e-reviewScore').value.trim(),
+      reviewCount: document.getElementById('e-reviewCount').value.trim(),
+      likes:       document.getElementById('e-likes').value.trim(),
+      comments:    document.getElementById('e-comments').value.trim(),
+      saves:       document.getElementById('e-saves').value.trim(),
+      savedBy:     document.getElementById('e-savedBy').value.trim(),
+      saveDate:    document.getElementById('e-saveDate').value.trim(),
+      note:        document.getElementById('e-note').value.trim(),
+      tags:        document.getElementById('e-tags').value.trim(),
+      urgent:      document.getElementById('e-urgent').value.trim()
+    };
+
+    // Build bookmarklet: opens capture page with URL params
+    const bm = `javascript:(function(){` +
+      `var u=encodeURIComponent(location.href);` +
+      `var t=encodeURIComponent(document.title);` +
+      `var p='';` +
+      `var ps=['[class*="price"]','[itemprop="price"]','.a-price-whole','.price'];` +
+      `for(var i=0;i<ps.length;i++){var el=document.querySelector(ps[i]);if(el){p=encodeURIComponent(el.textContent.trim().replace(/\\s+/g,' ').substring(0,50));break;}}` +
+      `var b='';` +
+      `var bs=['[itemprop="brand"]','[class*="brand-name"]','#bylineInfo'];` +
+      `for(var i=0;i<bs.length;i++){var el=document.querySelector(bs[i]);if(el){b=encodeURIComponent(el.textContent.trim().substring(0,80));break;}}` +
+      `window.open('${captureUrl}?url='+u+'&brand='+b+'&price='+p,'pavoi-capture','width=500,height=720,scrollbars=yes,resizable=yes');` +
+      `})();`;
+
+    // Update the link and also update the capture page config
+    document.getElementById('bookmarkletLink').href = bm;
+    document.getElementById('bookmarkletCode').textContent = bm.substring(0, 300) + '...';
+    document.getElementById('bookmarkletArea').classList.add('visible');
+
+    // Scroll to it
+    document.getElementById('bookmarkletArea').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    // Also update capture page config instructions
+    const configJson = `{\n  formAction: "${formAction}",\n  fields: ${JSON.stringify(fields, null, 4)}\n}`;
+    console.log('Paste this into pavoi-capture.html PAVOI_CONFIG:\n' + configJson);
+  }
+
+  function copyCode() {
+    const code = document.getElementById('bookmarkletLink').href;
+    navigator.clipboard.writeText(code).then(() => {
+      const s = document.getElementById('copySuccess');
+      s.style.display = 'block';
+      setTimeout(() => { s.style.display = 'none'; }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>
