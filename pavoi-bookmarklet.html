@@ -311,7 +311,7 @@ const CAPTURE_URL = 'https://hannah744.github.io/pavoi-inspire/pavoi-capture.htm
 // ─────────────────────────────────────────────────────────────────
 
 function buildBM(url) {
-  const code = `(function(){var u=encodeURIComponent(window.location.href);var img='';var m=document.querySelector('meta[property="og:image"]')||document.querySelector('meta[name="twitter:image"]');if(m&&m.content)img=encodeURIComponent(m.content);window.open('${url}?url='+u+'&img='+img,'_blank');})();`;
+  const code = `(function(){var u=encodeURIComponent(window.location.href);var img='';var m=document.querySelector('meta[property="og:image"]')||document.querySelector('meta[name="twitter:image"]');if(m&&m.content)img=encodeURIComponent(m.content);window.open('${url}?url='+u+'&img='+img,'pavoi_capture','width=440,height=750,left='+Math.round((screen.width-440)/2)+',top='+Math.round((screen.height-750)/2)+',resizable=yes,scrollbars=yes');})();`;
   return 'javascript:' + code.replace(/\s+/g,' ');
 }
 
