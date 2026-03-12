@@ -475,33 +475,26 @@
     btn.disabled = true;
     btn.textContent = 'Saving…';
 
-    // POST via hidden form targeting a hidden iframe.
-    // Form submissions are not subject to CORS restrictions —
-    // the Apps Script receives the POST, writes the row, returns a response.
-    // The iframe loads the response (we can't read it, but the write already happened).
+    // Google Forms accepts GET requests to the formResponse endpoint.
+    // Setting iframe.src triggers a navigation that writes the row to the Sheet —
+    // no CORS restrictions apply to iframe navigation.
+    // We use a 'submitted' flag so the onload handler ignores the initial
+    // about:blank load that happens when the iframe first renders.
     const iframe = document.getElementById('submitFrame');
-    const hiddenForm = document.createElement('form');
-    hiddenForm.method  = 'POST';
-    hiddenForm.action  = PAVOI_CONFIG.formAction;
-    hiddenForm.target  = 'submitFrame';
-    hiddenForm.style.display = 'none';
+    let submitted = false;
 
+    const submitUrl = new URL(PAVOI_CONFIG.formAction);
     for (const [key, value] of data.entries()) {
-      const input   = document.createElement('input');
-      input.type    = 'hidden';
-      input.name    = key;
-      input.value   = value;
-      hiddenForm.appendChild(input);
+      submitUrl.searchParams.append(key, value);
     }
 
-    document.body.appendChild(hiddenForm);
-
-    iframe.onload = () => {
-      hiddenForm.remove();
+    iframe.onload = function () {
+      if (!submitted) return;
       showSuccessState(savedBy);
     };
 
-    hiddenForm.submit();
+    submitted = true;
+    iframe.src = submitUrl.toString();
   }
 
   function showSuccessState(savedBy) {
