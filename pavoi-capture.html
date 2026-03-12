@@ -475,26 +475,32 @@
     btn.disabled = true;
     btn.textContent = 'Saving…';
 
-    // Google Forms accepts GET requests to the formResponse endpoint.
-    // Setting iframe.src triggers a navigation that writes the row to the Sheet —
-    // no CORS restrictions apply to iframe navigation.
-    // We use a 'submitted' flag so the onload handler ignores the initial
-    // about:blank load that happens when the iframe first renders.
-    const iframe = document.getElementById('submitFrame');
-    let submitted = false;
-
-    const submitUrl = new URL(PAVOI_CONFIG.formAction);
+    // no-cors fetch: browser sends the POST to Google Forms without enforcing CORS
+    // on the response. Google Forms writes the row server-side before redirecting.
+    // The response is opaque (we can't read it), but the write happens regardless.
+    // REQUIREMENT: the Google Form must NOT require sign-in (no "Limit to 1 response",
+    // no "Restrict to org", no "Verified" email collection) — otherwise Google silently
+    // redirects to a login page and the data is never written.
+    const params = new URLSearchParams();
     for (const [key, value] of data.entries()) {
-      submitUrl.searchParams.append(key, value);
+      params.append(key, value);
     }
 
-    iframe.onload = function () {
-      if (!submitted) return;
+    fetch(PAVOI_CONFIG.formAction, {
+      method:  'POST',
+      mode:    'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body:    params.toString()
+    })
+    .then(() => {
       showSuccessState(savedBy);
-    };
-
-    submitted = true;
-    iframe.src = submitUrl.toString();
+    })
+    .catch(err => {
+      btn.disabled = false;
+      btn.textContent = 'Save to PAVOI Inspire ✦';
+      showStatus('error', 'Could not reach Google Forms. Check your connection and try again.');
+      console.error('Submission error:', err);
+    });
   }
 
   function showSuccessState(savedBy) {
