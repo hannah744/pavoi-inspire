@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#2e4042">
+<title>PAVOI Inspire · Bookmarklet Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:#e6e7e5;color:#282828;
+  min-height:100vh;-webkit-font-smoothing:antialiased;
+}
+
+.hdr{
+  background:#2e4042;
+  padding:0 24px;height:60px;
+  display:flex;align-items:center;gap:14px;
+  box-shadow:0 1px 0 rgba(169,189,182,.2);
+}
+.hdr-brand{
+  color:#FFFFFF;
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;
+}
+.hdr-div{color:#4a6669;font-size:16px}
+.hdr-page{
+  color:#a9bdb6;
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:1.8px;text-transform:uppercase;
+}
+
+.container{max-width:640px;margin:0 auto;padding:36px 24px 64px}
+
+/* Hero */
+.hero{text-align:center;padding:44px 0 36px}
+.hero-eyebrow{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:2.5px;text-transform:uppercase;
+  color:#a9bdb6;margin-bottom:14px;
+}
+.hero-ttl{
+  font-family:'DM Sans',sans-serif;
+  font-size:32px;font-weight:700;letter-spacing:-.3px;
+  color:#2e4042;margin-bottom:12px;line-height:1.15;
+}
+.hero-sub{
+  font-family:'DM Sans',sans-serif;
+  font-size:16px;color:#6b7b79;line-height:1.65;
+  max-width:460px;margin:0 auto;
+}
+
+/* Cards */
+.card{
+  background:#FFFFFF;border-radius:2px;
+  padding:26px 24px;margin-bottom:18px;
+  box-shadow:0 2px 16px rgba(46,64,66,.08);
+  border-left:3px solid #2e4042;
+}
+.card-ttl{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:#2e4042;margin-bottom:18px;
+}
+.step-num{
+  background:#2e4042;color:#FFFFFF;
+  width:22px;height:22px;border-radius:2px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;flex-shrink:0;
+}
+
+.body{
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;line-height:1.7;color:#444444;
+}
+.body strong{color:#282828;font-weight:600}
+.body code{
+  background:#e6e7e5;border-radius:2px;padding:2px 7px;
+  font-size:13px;font-family:'Space Mono',monospace;color:#2e4042;
+}
+
+/* Bookmarklet drag area */
+.bm-row{
+  display:flex;align-items:center;justify-content:center;
+  gap:18px;margin:22px 0;flex-wrap:wrap;
+}
+.bm-btn{
+  background:#2e4042;color:#FFFFFF;
+  padding:13px 22px;border-radius:2px;
+  font-family:'Space Mono',monospace;
+  font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;
+  box-shadow:0 4px 16px rgba(46,64,66,.28);
+  white-space:nowrap;cursor:grab;
+  transition:opacity .15s;
+}
+.bm-btn:active{cursor:grabbing;opacity:.8}
+.bm-arrow{color:#a9bdb6;font-size:24px;flex-shrink:0}
+.bm-bar-mock{
+  background:#e6e7e5;border-radius:2px;
+  padding:9px 14px;
+  font-family:'Space Mono',monospace;
+  font-size:11px;color:#a9bdb6;letter-spacing:.8px;
+  display:flex;align-items:center;gap:10px;
+  flex:1;min-width:180px;max-width:260px;
+}
+.bm-dots{display:flex;gap:5px}
+.bm-dot{width:10px;height:10px;border-radius:50%;background:#cdd0ce}
+.bm-dot:nth-child(1){background:#c0392b}
+.bm-dot:nth-child(2){background:#e8a838}
+.bm-dot:nth-child(3){background:#2e4042}
+
+/* Code box */
+.code-area{background:#f5f6f5;border:1.5px solid #cdd0ce;border-radius:2px;padding:14px;margin-top:12px}
+.code-label{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  color:#a9bdb6;margin-bottom:8px;
+}
+.code-box{
+  background:#282828;color:#a9bdb6;
+  border-radius:2px;padding:12px 14px;
+  font-family:'Space Mono',monospace;
+  font-size:11px;word-break:break-all;line-height:1.5;
+  max-height:72px;overflow:hidden;
+}
+.btn-copy{
+  margin-top:10px;
+  background:#FFFFFF;
+  border:1.5px solid #cdd0ce;
+  border-radius:2px;padding:8px 16px;
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;color:#2e4042;
+  transition:all .15s;
+}
+.btn-copy:hover{background:#e6e7e5}
+.btn-copy.done{background:#2e4042;color:#FFFFFF;border-color:#2e4042}
+
+/* How it works */
+.hwi{
+  background:#f5f6f5;
+  border:1.5px solid #cdd0ce;
+  border-radius:2px;padding:18px 20px;margin-top:14px;
+}
+.hwi-ttl{
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:#a9bdb6;margin-bottom:14px;
+}
+.hwi-row{
+  display:flex;gap:14px;margin-bottom:12px;
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;color:#444444;line-height:1.55;
+}
+.hwi-row:last-child{margin-bottom:0}
+.hwi-n{
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;color:#a9bdb6;
+  flex-shrink:0;width:20px;padding-top:2px;letter-spacing:.5px;
+}
+
+/* Tip */
+.tip{
+  background:#eef2f1;
+  border-left:3px solid #2e4042;
+  border-radius:0 2px 2px 0;
+  padding:14px 16px;margin-top:14px;
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;color:#2e4042;line-height:1.6;
+}
+.tip strong{
+  display:block;margin-bottom:4px;
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+}
+
+hr.div{border:none;border-top:1px solid #cdd0ce;margin:6px 0 18px}
+
+/* Nav */
+.nav{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:36px}
+.nav-btn{
+  border-radius:2px;padding:13px 22px;
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;gap:7px;
+  transition:all .15s;
+}
+.nav-btn.outline{background:#FFFFFF;border:2px solid #2e4042;color:#2e4042}
+.nav-btn.outline:hover{background:#2e4042;color:#FFFFFF}
+.nav-btn.solid{background:#2e4042;border:2px solid #2e4042;color:#FFFFFF}
+.nav-btn.solid:hover{opacity:.85}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-brand">PAVOI</div>
+  <div class="hdr-div">/</div>
+  <div class="hdr-page">Bookmarklet Setup</div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Desktop Setup</div>
+    <div class="hero-ttl">One-Click Capture<br>from Any Website</div>
+    <div class="hero-sub">
+      Amazon, Pinterest, competitor stores, brand sites — click once and the URL
+      is captured automatically. Setup takes 60 seconds.
+    </div>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="card">
+    <div class="card-ttl"><span class="step-num">1</span> Update the URL in this file</div>
+    <div class="body">
+      Open <code>pavoi-bookmarklet.html</code> in a text editor and find:<br><br>
+      <code>const CAPTURE_URL = 'https://YOUR_USERNAME.github.io/…';</code><br><br>
+      Replace <code>YOUR_USERNAME</code> with your GitHub username and
+      <code>pavoi-inspire</code> with your repo name. Save and reload this page in your browser.
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="card">
+    <div class="card-ttl"><span class="step-num">2</span> Drag to your bookmarks bar</div>
+    <div class="body">
+      Make sure your bookmarks bar is visible
+      (<strong>Chrome:</strong> ⌘⇧B / Ctrl+Shift+B &nbsp;·&nbsp;
+       <strong>Safari:</strong> View → Show Favorites Bar), then drag the button below into it:
+    </div>
+
+    <div class="bm-row">
+      <a class="bm-btn" id="bmLink" href="#" onclick="return false;" title="Drag me to your bookmarks bar">
+        PAVOI Capture
+      </a>
+      <div class="bm-arrow">→</div>
+      <div class="bm-bar-mock">
+        <div class="bm-dots">
+          <div class="bm-dot"></div>
+          <div class="bm-dot"></div>
+          <div class="bm-dot"></div>
+        </div>
+        <span>Drop here</span>
+      </div>
+    </div>
+
+    <hr class="div">
+
+    <div class="code-area">
+      <div class="code-label">Or copy the code and add manually</div>
+      <div class="code-box" id="codePreview">Loading…</div>
+      <button class="btn-copy" id="btnCopy" onclick="copyCode()">Copy Bookmarklet Code</button>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="card">
+    <div class="card-ttl"><span class="step-num">3</span> Using it</div>
+
+    <div class="hwi">
+      <div class="hwi-ttl">The flow</div>
+      <div class="hwi-row"><span class="hwi-n">01</span>Browse to any product page, Amazon listing, Pinterest pin, or competitor site</div>
+      <div class="hwi-row"><span class="hwi-n">02</span>Click <strong>PAVOI Capture</strong> in your bookmarks bar</div>
+      <div class="hwi-row"><span class="hwi-n">03</span>PAVOI Inspire opens in a new tab — the <strong>page URL is pre-filled</strong></div>
+      <div class="hwi-row"><span class="hwi-n">04</span>The bookmarklet also tries to grab the <strong>og:image</strong> (main product photo) automatically</div>
+      <div class="hwi-row"><span class="hwi-n">05</span>Add your note and submit — done</div>
+    </div>
+
+    <div class="tip">
+      <strong>Pro tip — Right-click for a cleaner image</strong>
+      On most sites, right-click the main product image → "Copy Image Address" → paste into the Image URL field for a sharper, unpadded capture.
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="card">
+    <div class="card-ttl"><span class="step-num">4</span> Instagram &amp; TikTok (mobile)</div>
+    <div class="body">
+      In-app browsers on iOS don't pass URLs to the Share Sheet. Use the paste workaround:
+    </div>
+
+    <div class="hwi" style="margin-top:14px">
+      <div class="hwi-ttl">Mobile workflow</div>
+      <div class="hwi-row"><span class="hwi-n">01</span>Tap the share icon in Instagram or TikTok → <strong>Copy Link</strong></div>
+      <div class="hwi-row"><span class="hwi-n">02</span>Open <strong>PAVOI Capture</strong> from your Home Screen</div>
+      <div class="hwi-row"><span class="hwi-n">03</span>Tap <strong>Add URL</strong> → tap the <strong>📋 Paste</strong> button next to Source URL</div>
+      <div class="hwi-row"><span class="hwi-n">04</span>Add your note and submit</div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav">
+    <a class="nav-btn outline" href="pavoi-capture.html">Capture App →</a>
+    <a class="nav-btn solid"   href="pavoi-synthesis.html">Digest App →</a>
+  </div>
+
+</div>
+
+<script>
+// ── UPDATE after deploying to GitHub Pages ────────────────────────
+const CAPTURE_URL = 'https://hannah744.github.io/pavoi-inspire/pavoi-capture.html';
+// ─────────────────────────────────────────────────────────────────
+
+function buildBM(url) {
+  const code = `(function(){var u=encodeURIComponent(window.location.href);var img='';var m=document.querySelector('meta[property="og:image"]')||document.querySelector('meta[name="twitter:image"]');if(m&&m.content)img=encodeURIComponent(m.content);window.open('${url}?url='+u+'&img='+img,'_blank');})();`;
+  return 'javascript:' + code.replace(/\s+/g,' ');
+}
+
+function init() {
+  const bm   = buildBM(CAPTURE_URL);
+  const link = document.getElementById('bmLink');
+  link.href  = bm;
+  link.setAttribute('draggable','true');
+  document.getElementById('codePreview').textContent = bm.slice(0, 110) + '…';
+}
+
+function copyCode() {
+  const bm  = buildBM(CAPTURE_URL);
+  const btn = document.getElementById('btnCopy');
+  const done = () => {
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = 'Copy Bookmarklet Code'; btn.classList.remove('done'); }, 2500);
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(bm).then(done);
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = bm; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); done();
+  }
+}
+
+document.getElementById('bmLink').addEventListener('click', function(e) {
+  e.preventDefault();
+  alert(
+    'TO ADD THE BOOKMARKLET MANUALLY:\n\n' +
+    '1. Click "Copy Bookmarklet Code" below the code box\n' +
+    '2. Right-click your bookmarks bar → "Add Page" or "Add Bookmark"\n' +
+    '3. Name it: PAVOI Capture\n' +
+    '4. Paste the copied code as the URL / Address\n\n' +
+    'Or just drag the PAVOI Capture button directly into your bookmarks bar.'
+  );
+});
+
+init();
+</script>
+</body>
+</html>
