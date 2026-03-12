@@ -232,6 +232,21 @@
 
   <div class="status-banner" id="statusBanner"></div>
 
+  <!-- Hidden iframe for form submission -->
+  <iframe id="submitFrame" name="submitFrame" style="display:none;"></iframe>
+
+  <!-- Success state -->
+  <div id="successState" style="display:none; flex-direction:column; align-items:center; justify-content:center; padding: 60px 32px; text-align:center; min-height: 60vh;">
+    <div style="font-size: 36px; margin-bottom: 20px; color: var(--gold);">✦</div>
+    <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 12px;">Saved</div>
+    <div style="font-size: 20px; font-weight: 300; margin-bottom: 8px;">Queued for Friday digest.</div>
+    <div style="font-size: 13px; color: var(--muted); margin-bottom: 36px;" id="successName"></div>
+    <div style="display:flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+      <button onclick="resetForm()" style="background: var(--gold); color: #0A0A0A; border: none; border-radius: 6px; padding: 12px 24px; font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; font-family: inherit;">Save Another ✦</button>
+      <button onclick="window.close()" style="background: none; border: 1px solid var(--border); border-radius: 6px; padding: 12px 24px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; color: var(--muted); font-family: inherit;">Close</button>
+    </div>
+  </div>
+
   <form class="form" id="captureForm" onsubmit="handleSubmit(event)">
 
     <!-- URL -->
@@ -459,23 +474,52 @@
     btn.disabled = true;
     btn.textContent = 'Saving…';
 
-    try {
-      await fetch(PAVOI_CONFIG.formAction, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: data.toString()
-      });
+    // Build and submit a hidden form targeting a hidden iframe
+    // More reliable than no-cors fetch with Google Forms
+    const iframe = document.getElementById('submitFrame');
+    const hiddenForm = document.createElement('form');
+    hiddenForm.method = 'POST';
+    hiddenForm.action = PAVOI_CONFIG.formAction;
+    hiddenForm.target = 'submitFrame';
+    hiddenForm.style.display = 'none';
 
-      showStatus('success', '✦ Saved. Queued for Friday digest.');
-      btn.textContent = 'Saved ✦';
-      setTimeout(() => { if (window.opener) window.close(); }, 1800);
-
-    } catch (err) {
-      showStatus('warning', 'Check your Google Sheets response tab to confirm the submission landed.');
-      btn.disabled = false;
-      btn.textContent = 'Save to PAVOI Inspire ✦';
+    for (const [key, value] of data.entries()) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = value;
+      hiddenForm.appendChild(input);
     }
+
+    document.body.appendChild(hiddenForm);
+
+    // Listen for iframe load = form submitted successfully
+    iframe.onload = () => {
+      hiddenForm.remove();
+      showSuccessState(savedBy);
+    };
+
+    hiddenForm.submit();
+  }
+
+  function showSuccessState(savedBy) {
+    document.getElementById('captureForm').style.display = 'none';
+    document.getElementById('statusBanner').style.display = 'none';
+    document.getElementById('successState').style.display = 'flex';
+    document.getElementById('successName').textContent = savedBy;
+  }
+
+  function resetForm() {
+    document.getElementById('captureForm').reset();
+    document.getElementById('captureForm').style.display = 'block';
+    document.getElementById('successState').style.display = 'none';
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').textContent = 'Save to PAVOI Inspire ✦';
+    document.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('active'));
+    prefillFromParams();
+    const saved = localStorage.getItem('pavoi-name');
+    if (saved) document.getElementById('f-saved-by').value = saved;
+    window.scrollTo(0, 0);
   }
 
   function showStatus(type, msg) {
