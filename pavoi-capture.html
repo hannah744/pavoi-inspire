@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PAVOI Inspire">
+<meta name="theme-color" content="#2e4042">
+<title>PAVOI Inspire · Capture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#e6e7e5;color:#282828;min-height:100dvh;padding-bottom:100px;-webkit-font-smoothing:antialiased}
+.hdr{position:sticky;top:0;z-index:200;background:#2e4042;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:58px;box-shadow:0 1px 0 rgba(169,189,182,.25)}
+.hdr-left{display:flex;flex-direction:column;gap:1px}
+.hdr-brand{color:#FFFFFF;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase}
+.hdr-label{color:#a9bdb6;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1.8px;text-transform:uppercase}
+.name-sel{background:#3a5053;color:#FFFFFF;border:1.5px solid #a9bdb6;border-radius:3px;padding:7px 14px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.5px;outline:none;cursor:pointer;-webkit-appearance:none;max-width:158px;text-overflow:ellipsis}
+.add-row{display:flex;gap:10px;padding:16px 16px 0;max-width:540px;margin:0 auto}
+.btn-add{flex:1;height:52px;border-radius:2px;border:none;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .15s}
+.btn-add:active{opacity:.75}
+.btn-dark{background:#2e4042;color:#FFFFFF}
+.btn-light{background:#FFFFFF;color:#2e4042;border:2px solid #2e4042}
+.url-panel-wrap{padding:12px 16px 0;max-width:540px;margin:0 auto}
+.url-panel{background:#FFFFFF;border-radius:2px;padding:20px;display:none;box-shadow:0 2px 20px rgba(46,64,66,.10);border-left:3px solid #2e4042}
+.url-panel.open{display:block}
+.panel-ttl{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#a9bdb6;margin-bottom:16px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.lbl{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6b7b79;display:block}
+.lbl em{font-weight:400;text-transform:none;letter-spacing:0;font-style:normal;font-size:10px;color:#a9bdb6}
+.ri{display:flex;gap:6px}
+.ri .inp{flex:1}
+.inp{width:100%;background:#f5f6f5;border:1.5px solid #cdd0ce;border-radius:2px;padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:15px;color:#282828;outline:none;-webkit-appearance:none;resize:none;transition:border-color .2s,background .2s}
+.inp:focus{border-color:#2e4042;background:#FFFFFF}
+.inp.err{border-color:#c0392b}
+.btn-paste{background:#2e4042;color:#FFFFFF;border:none;border-radius:2px;padding:11px 13px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.5px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:opacity .15s}
+.btn-paste:active{opacity:.7}
+.btn-confirm{width:100%;height:46px;background:#2e4042;color:#FFFFFF;border:none;border-radius:2px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:opacity .15s}
+.btn-confirm:active{opacity:.75}
+.cards{padding:14px 16px;display:flex;flex-direction:column;gap:14px;max-width:540px;margin:0 auto}
+.card{background:#FFFFFF;border-radius:2px;overflow:hidden;box-shadow:0 2px 16px rgba(46,64,66,.09);position:relative}
+.card-img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#dde0de;display:block}
+.card-img.hidden{display:none}
+.card-img-ph{width:100%;aspect-ratio:4/3;background:#dde0de;display:none;align-items:center;justify-content:center;flex-direction:column;gap:8px}
+.card-img-ph.show{display:flex}
+.card-img-ph-icon{font-size:40px;opacity:.4}
+.card-img-ph-txt{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:#a9bdb6}
+.card-body{padding:16px;display:flex;flex-direction:column;gap:12px}
+.card-del{position:absolute;top:10px;right:10px;background:rgba(46,64,66,.75);color:#FFFFFF;border:none;border-radius:2px;width:28px;height:28px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;font-family:inherit;transition:opacity .15s}
+.card-del:active{opacity:.7}
+.card-num{position:absolute;top:10px;left:10px;background:rgba(46,64,66,.8);color:#FFFFFF;border-radius:2px;padding:3px 8px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.c-ov{display:none;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:10px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.c-ov.on{display:flex}
+.c-ov.uploading{background:rgba(255,255,255,.9);color:#6b7b79}
+.c-ov.success{background:rgba(46,64,66,.08);color:#2e4042}
+.c-ov.fail{background:rgba(192,57,43,.07);color:#c0392b}
+.c-ov-icon{font-size:36px}
+.spin{display:inline-block;animation:spin 1s linear infinite;font-size:28px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:56px 24px;max-width:360px;margin:0 auto}
+.empty-icon{font-size:40px;margin-bottom:18px;opacity:.5}
+.empty-eyebrow{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#a9bdb6;margin-bottom:10px}
+.empty-ttl{font-family:'DM Sans',sans-serif;font-size:20px;font-weight:600;color:#2e4042;margin-bottom:10px;line-height:1.3}
+.empty-txt{font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.7;color:#6b7b79}
+.empty-txt strong{color:#2e4042;font-weight:600}
+.sub-bar{position:fixed;bottom:0;left:0;right:0;background:#FFFFFF;border-top:1px solid #cdd0ce;padding:12px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom));display:none;z-index:300;box-shadow:0 -4px 24px rgba(46,64,66,.10)}
+.sub-bar.on{display:block}
+.btn-sub{width:100%;height:54px;background:#2e4042;color:#FFFFFF;border:none;border-radius:2px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;max-width:480px;margin:0 auto;transition:opacity .15s}
+.btn-sub:disabled{opacity:.45;cursor:not-allowed}
+.btn-sub:active:not(:disabled){opacity:.8}
+.sub-badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:2px;padding:2px 9px;font-size:11px;letter-spacing:1px}
+.toast{position:fixed;top:68px;left:50%;transform:translateX(-50%) translateY(-10px);background:#282828;color:#FFFFFF;padding:10px 20px;border-radius:2px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.8px;opacity:0;transition:opacity .25s,transform .25s;z-index:999;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.loading-screen{position:fixed;inset:0;background:#2e4042;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:9999;transition:opacity .5s}
+.loading-screen.hidden{opacity:0;pointer-events:none}
+.loading-logo{color:#FFFFFF;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;letter-spacing:5px;text-transform:uppercase}
+.loading-sub{color:#a9bdb6;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase}
+@media(min-width:560px){.sub-bar{left:50%;right:auto;transform:translateX(-50%);width:100%;max-width:540px}}
+</style>
+</head>
+<body>
+<iframe name="gform_iframe" id="gform_iframe" style="display:none" aria-hidden="true"></iframe>
+
+<div class="loading-screen" id="loadScreen">
+  <div class="loading-logo">PAVOI</div>
+  <div class="loading-sub">Inspire · Capture</div>
+</div>
+
+<header class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-brand">PAVOI</div>
+    <div class="hdr-label">Inspire · Capture</div>
+  </div>
+  <select class="name-sel" id="nameSelect" onchange="saveName()">
+    <option value="">Your name…</option>
+  </select>
+</header>
+
+<div class="add-row">
+  <label class="btn-add btn-dark" for="fileIn">📷&nbsp; Add Photos</label>
+  <button class="btn-add btn-light" onclick="toggleUrlPanel()">🔗&nbsp; Add URL</button>
+  <input type="file" id="fileIn" multiple accept="image/*" style="display:none" onchange="onFiles(event)">
+</div>
+
+<div class="url-panel-wrap">
+  <div class="url-panel" id="urlPanel">
+    <div class="panel-ttl">Add from URL — desktop / online shopping</div>
+    <div class="fg">
+      <label class="lbl">Source URL <em>— where you found it (optional)</em></label>
+      <div class="ri">
+        <input class="inp" type="url" id="uSrc" placeholder="https://…" autocomplete="off">
+        <button class="btn-paste" onclick="pasteField('uSrc')">📋 Paste</button>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="lbl">Image URL <em style="color:#c0392b"> *</em> <em>— direct link to the image</em></label>
+      <div class="ri">
+        <input class="inp" type="url" id="uImg" placeholder="https://…" autocomplete="off">
+        <button class="btn-paste" onclick="pasteField('uImg')">📋 Paste</button>
+      </div>
+    </div>
+    <div class="fg" style="margin-bottom:0">
+      <label class="lbl">Note <em style="color:#c0392b"> *</em> <em>— why are you saving this?</em></label>
+      <textarea class="inp" id="uNote" rows="2" placeholder="What should the team look at here?"></textarea>
+    </div>
+    <button class="btn-confirm" onclick="addUrlCard()">Add to Queue</button>
+  </div>
+</div>
+
+<div class="cards" id="cards">
+  <div class="empty" id="empty">
+    <div class="empty-icon">📸</div>
+    <div class="empty-eyebrow">Ready to capture</div>
+    <div class="empty-ttl">Add inspiration from anywhere</div>
+    <div class="empty-txt">
+      Tap <strong>Add Photos</strong> to bulk-upload from your camera roll — each photo gets its own card.<br><br>
+      <strong>Instagram / TikTok?</strong> Copy Link in-app, then tap <strong>Add URL → 📋 Paste</strong>.
+    </div>
+  </div>
+</div>
+
+<div class="sub-bar" id="subBar">
+  <button class="btn-sub" id="btnSub" onclick="submitAll()">
+    Submit to Sheet
+    <span class="sub-badge" id="subCount">0</span>
+  </button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CONFIG = {
+  // ── Captures Google Form ──────────────────────────────────────
+  GOOGLE_FORM_ID:   '1FAIpQLScqkWYOe1Kt7jkcGHi2kyj2wTvhJuLzZkcPzM6AZvbereBadg',
+
+  FIELD_SOURCE_URL:    'entry.436271806',
+  FIELD_SAVED_BY:      'entry.1359018212',
+  FIELD_SAVE_DATE:     'entry.1185952228',
+  FIELD_NOTE:          'entry.1510212450',
+  FIELD_IMAGE_URL:     'entry.1747230784',
+  FIELD_PLATFORM:      'entry.1492234884',
+  FIELD_CONTENT_TYPE:  'entry.46194548',
+  FIELD_BRAND:         'entry.381198150',
+  FIELD_PRICE:         'entry.2030185014',
+  FIELD_TAGS:          'entry.89148739',
+  FIELD_URGENT:        'entry.1507063394',
+
+  // ── ImgBB ────────────────────────────────────────────────────
+  IMGBB_API_KEY: 'f6e9a959340441c78b521d6a1f623af7',
+
+  // ── Team (add / remove names here) ───────────────────────────
+  TEAM: [
+    'Hannah Samlin',
+    'Rita Lopes',
+    'Tal Masica',
+    'Shynade Austin',
+    'Tara Ganon',
+    'Kelly Hallinan'
+  ]
+};
+
+let cards = [];
+let uid   = 0;
+let _toastTimer;
+
+function init() {
+  const sel = document.getElementById('nameSelect');
+  CONFIG.TEAM.forEach(name => {
+    const o = document.createElement('option');
+    o.value = o.textContent = name;
+    sel.appendChild(o);
+  });
+  const saved = localStorage.getItem('pavoi_name');
+  if (saved && CONFIG.TEAM.includes(saved)) sel.value = saved;
+
+  const params = new URLSearchParams(window.location.search);
+  const pUrl   = params.get('url');
+  const pImg   = params.get('img');
+  if (pUrl || pImg) {
+    // Auto-add card immediately from bookmarklet params — skip manual "Add to Queue" step
+    const srcUrl = decodeURIComponent(pUrl || '');
+    const imgUrl = decodeURIComponent(pImg || '');
+    hideEmpty();
+    const id = ++uid;
+    cards.push({ id, file: null, src: imgUrl, srcUrl, note: '', type: 'url' });
+    renderCard({ id, src: imgUrl || 'about:blank', prefillSrc: srcUrl });
+    updateBar();
+  }
+  setTimeout(() => document.getElementById('loadScreen').classList.add('hidden'), 450);
+}
+
+function saveName() {
+  const v = document.getElementById('nameSelect').value;
+  if (v) localStorage.setItem('pavoi_name', v);
+}
+
+function toggleUrlPanel() {
+  const p = document.getElementById('urlPanel');
+  p.classList.toggle('open');
+  if (p.classList.contains('open')) setTimeout(() => document.getElementById('uSrc').focus(), 100);
+}
+
+async function pasteField(id) {
+  try {
+    const t = await navigator.clipboard.readText();
+    document.getElementById(id).value = t;
+    toast('Pasted');
+  } catch {
+    document.getElementById(id).focus();
+    toast('Tap the field and paste manually');
+  }
+}
+
+async function pasteCardField(cid, cls) {
+  try {
+    const t = await navigator.clipboard.readText();
+    const el = document.querySelector(`[data-cid="${cid}"] .${cls}`);
+    if (el) { el.value = t; toast('Pasted'); }
+  } catch { toast('Tap the field and paste manually'); }
+}
+
+function onFiles(e) {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  hideEmpty();
+  files.forEach(f => {
+    const id  = ++uid;
+    const src = URL.createObjectURL(f);
+    cards.push({ id, file: f, src, type: 'photo' });
+    renderCard({ id, src });
+  });
+  e.target.value = '';
+  updateBar();
+}
+
+function addUrlCard() {
+  const srcUrl = document.getElementById('uSrc').value.trim();
+  const imgUrl = document.getElementById('uImg').value.trim();
+  const note   = document.getElementById('uNote').value.trim();
+  if (!srcUrl && !imgUrl) { toast('Add a URL or image link'); return; }
+  hideEmpty();
+  const id = ++uid;
+  cards.push({ id, file: null, src: imgUrl, srcUrl, note, type: 'url' });
+  renderCard({ id, src: imgUrl, prefillSrc: srcUrl, prefillNote: note });
+  document.getElementById('uSrc').value  = '';
+  document.getElementById('uImg').value  = '';
+  document.getElementById('uNote').value = '';
+  document.getElementById('urlPanel').classList.remove('open');
+  updateBar();
+}
+
+function renderCard({ id, src, prefillSrc = '', prefillNote = '' }) {
+  const num  = cards.length;
+  const wrap = document.createElement('div');
+  wrap.className   = 'card';
+  wrap.dataset.cid = id;
+  wrap.innerHTML = `
+    <div class="card-num">${num}</div>
+    <button class="card-del" onclick="delCard(${id})" aria-label="Remove">✕</button>
+    <img class="card-img" src="${esc(src)}" alt="Inspiration"
+         onload="this.classList.remove('hidden')"
+         onerror="this.classList.add('hidden');this.nextElementSibling.classList.add('show')">
+    <div class="card-img-ph">
+      <div class="card-img-ph-icon">🖼</div>
+      <div class="card-img-ph-txt">Image Preview</div>
+    </div>
+    <div class="card-body">
+      <div class="fg" style="margin-bottom:0">
+        <label class="lbl">Source URL <em>— where you found it (optional)</em></label>
+        <div class="ri">
+          <input class="inp c-src" type="url" placeholder="https://…" value="${esc(prefillSrc)}" autocomplete="off">
+          <button class="btn-paste" onclick="pasteCardField(${id},'c-src')">📋 Paste</button>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <label class="lbl">Note <em style="color:#c0392b"> *</em> <em>— why are you saving this?</em></label>
+        <textarea class="inp c-note" rows="2" placeholder="What should the team look at here?">${esc(prefillNote)}</textarea>
+      </div>
+    </div>
+    <div class="c-ov" id="ov-${id}">
+      <div class="c-ov-icon" id="ov-icon-${id}"></div>
+      <div id="ov-txt-${id}"></div>
+    </div>`;
+  const container = document.getElementById('cards');
+  const emptyEl   = document.getElementById('empty');
+  container.insertBefore(wrap, emptyEl ? emptyEl.nextSibling : container.firstChild);
+  const ta = wrap.querySelector('.c-note');
+  ta.addEventListener('input', () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; });
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function delCard(id) {
+  cards = cards.filter(c => c.id !== id);
+  const el = document.querySelector(`[data-cid="${id}"]`);
+  if (el) el.remove();
+  document.querySelectorAll('.card').forEach((el, i) => {
+    const n = el.querySelector('.card-num'); if (n) n.textContent = i + 1;
+  });
+  updateBar();
+  if (!cards.length) showEmpty();
+}
+
+function updateBar() {
+  document.getElementById('subCount').textContent = cards.length;
+  document.getElementById('subBar').classList.toggle('on', cards.length > 0);
+}
+function hideEmpty() { const e = document.getElementById('empty'); if (e) e.style.display = 'none'; }
+function showEmpty()  { const e = document.getElementById('empty'); if (e) e.style.display = ''; }
+
+async function submitAll() {
+  const name = document.getElementById('nameSelect').value;
+  if (!name) { toast('Select your name first'); return; }
+  if (!cards.length) { toast('Add at least one item first'); return; }
+  let hasErr = false;
+  for (const c of cards) {
+    const el = document.querySelector(`[data-cid="${c.id}"] .c-note`);
+    if (!el) continue;
+    if (!el.value.trim()) { el.classList.add('err'); hasErr = true; }
+    else el.classList.remove('err');
+  }
+  if (hasErr) { toast('Every item needs a note'); return; }
+  const btn = document.getElementById('btnSub');
+  btn.disabled = true;
+  const now = new Date().toISOString();
+  for (const c of cards) {
+    const el = document.querySelector(`[data-cid="${c.id}"]`);
+    if (!el) continue;
+    const note   = el.querySelector('.c-note').value.trim();
+    const srcUrl = el.querySelector('.c-src').value.trim();
+    setOverlay(c.id, 'uploading', '<span class="spin">⏳</span>', 'Uploading…');
+    try {
+      let imgUrl = c.src;
+      if (c.type === 'photo' && c.file) {
+        imgUrl = await imgbbUpload(c.file);
+        setOverlay(c.id, 'uploading', '<span class="spin">📤</span>', 'Saving…');
+      }
+      await googleSubmit({ srcUrl, name, date: now, note, imgUrl });
+      setOverlay(c.id, 'success', '✓', 'Saved');
+    } catch (err) {
+      console.error(err);
+      setOverlay(c.id, 'fail', '✕', err.message || 'Failed — check connection');
+    }
+  }
+  const failCount = document.querySelectorAll('.c-ov.fail').length;
+  if (!failCount) {
+    toast('All saved to the sheet');
+    setTimeout(() => {
+      cards = []; uid = 0;
+      document.getElementById('cards').innerHTML = `
+        <div class="empty" id="empty">
+          <div class="empty-icon">📸</div>
+          <div class="empty-eyebrow">Ready to capture</div>
+          <div class="empty-ttl">Add inspiration from anywhere</div>
+          <div class="empty-txt">
+            Tap <strong>Add Photos</strong> to bulk-upload from your camera roll — each photo gets its own card.<br><br>
+            <strong>Instagram / TikTok?</strong> Copy Link in-app, then tap <strong>Add URL → 📋 Paste</strong>.
+          </div>
+        </div>`;
+      updateBar();
+    }, 1800);
+  } else {
+    toast(`${failCount} item(s) failed — try again`);
+    btn.disabled = false;
+  }
+}
+
+function setOverlay(id, state, iconHtml, txt) {
+  const ov = document.getElementById(`ov-${id}`);
+  if (!ov) return;
+  ov.className = `c-ov on ${state}`;
+  document.getElementById(`ov-icon-${id}`).innerHTML = iconHtml;
+  document.getElementById(`ov-txt-${id}`).textContent = txt;
+}
+
+async function imgbbUpload(file) {
+  const b64 = await toBase64(file);
+  const fd  = new FormData();
+  fd.append('key',   CONFIG.IMGBB_API_KEY);
+  fd.append('image', b64);
+  const r = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: fd });
+  if (!r.ok) throw new Error(`ImgBB ${r.status}`);
+  const d = await r.json();
+  if (!d.success) throw new Error('ImgBB rejected upload');
+  return d.data.url;
+}
+
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const rd = new FileReader();
+    rd.onload = () => res(rd.result.split(',')[1]);
+    rd.onerror = rej;
+    rd.readAsDataURL(file);
+  });
+}
+
+function googleSubmit({ srcUrl, name, date, note, imgUrl }) {
+  return new Promise((resolve) => {
+    const formAction = `https://docs.google.com/forms/d/e/${CONFIG.GOOGLE_FORM_ID}/formResponse`;
+    const fields = {
+      [CONFIG.FIELD_SOURCE_URL]:   srcUrl || '',
+      [CONFIG.FIELD_SAVED_BY]:     name,
+      [CONFIG.FIELD_SAVE_DATE]:    date,
+      [CONFIG.FIELD_NOTE]:         note,
+      [CONFIG.FIELD_IMAGE_URL]:    imgUrl || '',
+      [CONFIG.FIELD_PLATFORM]:     '',
+      [CONFIG.FIELD_CONTENT_TYPE]: '',
+      [CONFIG.FIELD_BRAND]:        '',
+      [CONFIG.FIELD_PRICE]:        '',
+      [CONFIG.FIELD_TAGS]:         '',
+      [CONFIG.FIELD_URGENT]:       ''
+    };
+    // Use hidden iframe form submit — more reliable than no-cors fetch for Google Forms
+    const iframe = document.getElementById('gform_iframe');
+    const form   = document.createElement('form');
+    form.method  = 'POST';
+    form.action  = formAction;
+    form.target  = 'gform_iframe';
+    Object.entries(fields).forEach(([name, val]) => {
+      const inp = document.createElement('input');
+      inp.type  = 'hidden';
+      inp.name  = name;
+      inp.value = val;
+      form.appendChild(inp);
+    });
+    document.body.appendChild(form);
+    iframe.onload = () => { document.body.removeChild(form); resolve(); };
+    form.submit();
+    // Fallback resolve in case onload doesn't fire (cross-origin iframe)
+    setTimeout(resolve, 2000);
+  });
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg.toUpperCase();
+  el.classList.add('on');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('on'), 3000);
+}
+
+init();
+</script>
+</body>
+</html>
